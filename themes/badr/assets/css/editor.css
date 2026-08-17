@@ -1,0 +1,36 @@
+/**
+ * Styles de l'éditeur.
+ *
+ * Objectif : le personnel du BADR voit dans wp-admin ce qu'il obtiendra en
+ * façade. Les composants purement décoratifs (révélation au défilement) sont
+ * neutralisés ici, sinon des blocs paraîtraient vides pendant l'édition.
+ */
+
+.editor-styles-wrapper .badr-reveal {
+	opacity: 1 !important;
+	transform: none !important;
+}
+
+/* Le panneau d'édition n'est pas collant : évite un en-tête flottant parasite. */
+.editor-styles-wrapper .badr-header {
+	position: static;
+}
+
+/* Rappel visuel des repères de structure dans l'éditeur uniquement. */
+.editor-styles-wrapper .badr-band-dark,
+.editor-styles-wrapper .badr-band-deep {
+	outline: 1px dashed rgba(255, 255, 255, 0.35);
+	outline-offset: -4px;
+}
+
+.editor-styles-wrapper .badr-espaces {
+	/* L'éditeur rend les cartes non cliquables ; on garde le rendu visuel. */
+	pointer-events: none;
+}
+
+/* Les compositions verrouillées reçoivent un liseré discret pour signaler
+   au personnel qu'il peut modifier le texte mais pas la structure. */
+.editor-styles-wrapper .badr-locked {
+	box-shadow: inset 0 0 0 1px var(--wp--preset--color--rule-500);
+	border-radius: var(--wp--custom--radius--md);
+}

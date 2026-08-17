@@ -1,0 +1,42 @@
+<!-- wp:template-part {"slug":"header"} /-->
+
+<!-- wp:group {"tagName":"main","anchor":"badr-main","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
+<main id="badr-main" class="wp-block-group" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--80)">
+
+	<!-- wp:query-title {"type":"search","level":1,"fontSize":"x-large"} /-->
+
+	<!-- wp:search {"label":"Affiner la recherche","showLabel":true,"placeholder":"Rechercher","buttonText":"Rechercher","style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|70"}}}} /-->
+
+	<!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true},"layout":{"type":"default"}} -->
+	<div class="wp-block-query">
+		<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|60"}}} -->
+			<!-- wp:post-title {"isLink":true,"level":2,"fontSize":"large"} /-->
+			<!-- wp:post-excerpt {"moreText":"Lire la suite"} /-->
+		<!-- /wp:post-template -->
+
+		<!-- wp:query-pagination {"paginationArrow":"chevron","style":{"spacing":{"margin":{"top":"var:preset|spacing|70"}}},"layout":{"type":"flex","justifyContent":"space-between"}} -->
+			<!-- wp:query-pagination-previous {"label":"Page précédente"} /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next {"label":"Page suivante"} /-->
+		<!-- /wp:query-pagination -->
+
+		<!-- wp:query-no-results -->
+			<!-- wp:group {"className":"badr-empty"} -->
+			<div class="wp-block-group badr-empty">
+				<!-- wp:heading {"level":2,"fontSize":"large"} -->
+				<h2 class="wp-block-heading has-large-font-size">Aucun résultat pour cette recherche</h2>
+				<!-- /wp:heading -->
+
+				<!-- wp:paragraph -->
+				<p>Essayez un mot plus court ou un autre terme. Vous pouvez aussi consulter <a href="/nos-services-et-activites/">nos services et activités</a> ou nous écrire à <a href="mailto:info@badr.ca">info@badr.ca</a>.</p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+		<!-- /wp:query-no-results -->
+	</div>
+	<!-- /wp:query -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer"} /-->

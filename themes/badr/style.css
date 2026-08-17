@@ -1,0 +1,6124 @@
+/**
+ * Theme Name:  BADR
+ * Theme URI:   https://badr.ca/
+ * Author:      Bureau Associatif pour la Diversité et la Réinsertion
+ * Description: Thème de blocs du B.A.D.R — un système visuel chaleureux bâti sur l'ivoire, le sable et l'encre bleu-vert, ponctué des quatre couleurs du logo.
+ * Version:     0.2.0
+ * Requires at least: 6.6
+ * Tested up to: 6.8
+ * Requires PHP: 8.0
+ * License:     GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: badr
+ * Tags:        full-site-editing, block-patterns, accessibility-ready
+ */
+
+/* ==========================================================================
+   1. JETONS
+   --------------------------------------------------------------------------
+   Le fond du site n'est plus blanc ni bleu nuit : c'est un ivoire chaud.
+   L'encre est un bleu-vert profond, pas un bleu institutionnel. Les quatre
+   couleurs du logo ne servent qu'en accents et en voiles teintés.
+   ========================================================================== */
+
+:root {
+	/* Fonds chauds */
+	--b-ivory: #fdf8f2;
+	--b-ivory-2: #f9f1e7;
+	--b-sand: #f5eadc;
+	--b-sand-2: #efe1cf;
+	--b-sand-deep: #ebd9c4;
+
+	/* Encre bleu-vert */
+	--b-ink: #10303a;
+	--b-ink-2: #17414d;
+	--b-ink-3: #235a68;
+
+	/* Couleurs du logo, échantillonnées dans images/logo.jpeg */
+	--b-leaf: #429c2c;
+	--b-flame: #e33313;
+	--b-amber: #fa8603;
+	--b-azure: #013954;
+	--b-gold: #fbba00;
+
+	/* Variantes assombries, utilisables en texte sur fond clair */
+	--b-leaf-d: #2c6b1e;
+	--b-flame-d: #a82810;
+	--b-amber-d: #8a4a02;
+	--b-azure-d: #013954;
+	--b-gold-d: #7a5a00;
+
+	/* Texte */
+	--b-text: #22383f;
+	--b-muted: #56686e;
+	--b-on-dark: #f6ece0;
+	--b-on-dark-muted: rgba(246, 236, 224, 0.74);
+
+	/* Filets */
+	--b-line: rgba(16, 48, 58, 0.14);
+	--b-line-soft: rgba(16, 48, 58, 0.08);
+	--b-line-dark: rgba(246, 236, 224, 0.18);
+
+	/* Accent courant : chaque section le redéfinit */
+	--b-accent: var(--b-amber);
+	--b-accent-d: var(--b-amber-d);
+
+	/* Trame */
+	--b-gutter: clamp(1.25rem, 5vw, 4.5rem);
+	--b-wide: 78rem;
+	--b-prose: 38rem;
+	--b-sect: clamp(4.5rem, 9vw, 8.5rem);
+	--b-sect-tight: clamp(3rem, 6vw, 5.5rem);
+
+	/* Rayons */
+	--b-r-sm: 6px;
+	--b-r-md: 14px;
+	--b-r-lg: 26px;
+	--b-r-xl: 40px;
+	--b-r-pill: 999px;
+
+	/* Mouvement */
+	--b-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+	--b-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--b-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+	--b-fast: 180ms;
+	--b-base: 320ms;
+	--b-slow: 620ms;
+
+	/* Ombres, très douces : la lumière vient du papier, pas d'un projecteur */
+	--b-shadow-1: 0 1px 2px rgba(16, 48, 58, 0.05), 0 6px 18px rgba(16, 48, 58, 0.05);
+	--b-shadow-2: 0 2px 6px rgba(16, 48, 58, 0.06), 0 22px 50px rgba(16, 48, 58, 0.1);
+	--b-shadow-3: 0 4px 12px rgba(16, 48, 58, 0.08), 0 40px 90px rgba(16, 48, 58, 0.14);
+
+	/* Grain papier : une turbulence SVG, aucune image à télécharger */
+	--b-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* ==========================================================================
+   2. SOCLE
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	/* clip et non hidden : aucun ancrage ne casse, mais plus rien ne déborde
+	   horizontalement — c'était la cause des sections rognées à gauche. */
+	overflow-x: clip;
+	scroll-behavior: smooth;
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	overflow-x: clip;
+	background-color: var(--b-ivory);
+	color: var(--b-text);
+	font-synthesis-weight: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Voile de grain global, imperceptible mais il retire le côté « écran plat ». */
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	pointer-events: none;
+	background-image: var(--b-grain);
+	opacity: 0.16;
+	mix-blend-mode: multiply;
+}
+
+img,
+svg,
+video {
+	max-width: 100%;
+	height: auto;
+}
+
+img {
+	display: block;
+}
+
+::selection {
+	background: var(--b-amber);
+	color: #fff;
+}
+
+:where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+	outline: 3px solid var(--b-amber);
+	outline-offset: 3px;
+	border-radius: var(--b-r-sm);
+}
+
+.badr-sr-only {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+.badr-skip-link {
+	position: absolute;
+	top: 0.5rem;
+	left: 0.5rem;
+	z-index: 1000;
+	padding: 0.75rem 1.25rem;
+	background: var(--b-ink);
+	color: var(--b-ivory);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	text-decoration: none;
+	border-radius: var(--b-r-pill);
+	transform: translateY(-160%);
+	transition: transform var(--b-fast) var(--b-ease);
+}
+
+.badr-skip-link:focus {
+	transform: translateY(0);
+}
+
+/* ==========================================================================
+   3. TRAME — un seul système d'alignement pour tout le site
+   --------------------------------------------------------------------------
+   Toute section pleine largeur pose sa couleur ; « badr-shell » pose la
+   largeur et les marges. Aucun titre ne peut plus commencer hors écran.
+   ========================================================================== */
+
+.badr-shell {
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+}
+
+.badr-shell--narrow {
+	max-width: 58rem;
+}
+
+.badr-shell--full {
+	max-width: none;
+}
+
+.badr-section {
+	position: relative;
+	padding-block: var(--b-sect);
+	isolation: isolate;
+}
+
+.badr-section--tight {
+	padding-block: var(--b-sect-tight);
+}
+
+.badr-section--flush-top {
+	padding-top: 0;
+}
+
+.badr-section--flush-bottom {
+	padding-bottom: 0;
+}
+
+/* --- Ambiances de section ------------------------------------------------ */
+
+.badr-section--ivory {
+	background-color: var(--b-ivory);
+}
+
+.badr-section--sand {
+	background-color: var(--b-sand);
+}
+
+.badr-section--sand-deep {
+	background-color: var(--b-sand-2);
+}
+
+/* Bande sombre : encre bleu-vert, jamais du bleu marine plat, et toujours
+   accompagnée d'un voile coloré pour lui donner de la profondeur. */
+.badr-section--ink,
+.badr-band-dark {
+	background-color: var(--b-ink);
+	color: var(--b-on-dark);
+}
+
+.badr-section--ink::before,
+.badr-band-dark::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(64% 78% at 12% 8%, color-mix(in srgb, var(--b-accent) 26%, transparent), transparent 62%),
+		radial-gradient(52% 62% at 92% 96%, rgba(1, 57, 84, 0.7), transparent 64%);
+	pointer-events: none;
+}
+
+.badr-section--ink :is(h1, h2, h3, h4, h5, h6),
+.badr-band-dark :is(h1, h2, h3, h4, h5, h6) {
+	color: var(--b-on-dark);
+}
+
+.badr-section--ink p,
+.badr-band-dark p {
+	color: var(--b-on-dark-muted);
+}
+
+/* Voiles teintés : la couleur du logo posée comme une lumière, pas comme un bloc. */
+.badr-section--wash {
+	background-color: var(--b-ivory);
+}
+
+.badr-section--wash::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(70% 60% at 8% 0%, color-mix(in srgb, var(--b-accent) 14%, transparent), transparent 58%),
+		radial-gradient(60% 70% at 100% 84%, color-mix(in srgb, var(--b-accent) 9%, transparent), transparent 62%);
+	pointer-events: none;
+}
+
+/* Transition douce entre une bande claire et la bande sombre suivante. */
+.badr-section--fade-into-ink::after {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	height: clamp(3rem, 8vw, 7rem);
+	z-index: -1;
+	background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--b-ink) 12%, transparent));
+	pointer-events: none;
+}
+
+/* Ancien nom conservé pour les pages non encore recomposées. */
+.badr-section--cream {
+	background-color: var(--b-sand);
+}
+
+/* ==========================================================================
+   4. TYPOGRAPHIE
+   --------------------------------------------------------------------------
+   Trois rôles, jamais mélangés :
+     · Instrument Serif  → déclarations émotionnelles, chiffres, citations.
+     · Bricolage Grotesque → titres de section et de carte, interface.
+     · Manrope → texte courant.
+     · IBM Plex Mono → étiquettes, dates, folios.
+   ========================================================================== */
+
+.badr-eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0 0 1rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.78125rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-eyebrow::before {
+	content: "";
+	inline-size: 1.75rem;
+	block-size: 2px;
+	flex: none;
+	background: currentColor;
+	border-radius: 2px;
+	transform-origin: left center;
+	transform: scaleX(0);
+	animation: badr-rule-in 700ms var(--b-out) forwards;
+}
+
+.badr-section--ink .badr-eyebrow,
+.badr-band-dark .badr-eyebrow {
+	color: var(--b-gold);
+}
+
+@keyframes badr-rule-in {
+	to {
+		transform: scaleX(1);
+	}
+}
+
+/* Titre de section : grotesque serré, pas de serif partout. */
+.badr-section__title,
+.badr-title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2rem, 1.15rem + 2.9vw, 3.5rem);
+	font-weight: 600;
+	line-height: 1.06;
+	letter-spacing: -0.028em;
+	font-variation-settings: "opsz" 48;
+	text-wrap: balance;
+	color: var(--b-ink);
+	max-inline-size: 20ch;
+}
+
+/* Toute surface sombre du site, pas seulement « badr-section--ink » : la bande
+   d'impact et les témoignages posent leur propre fond, et leur titre restait
+   en encre foncée sur encre foncée — donc invisible. */
+.badr-section--ink :is(.badr-section__title, .badr-title),
+.badr-band-dark :is(.badr-section__title, .badr-title),
+.badr-impact :is(.badr-section__title, .badr-title),
+.badr-quotes :is(.badr-section__title, .badr-title),
+.badr-bank__hero :is(.badr-section__title, .badr-title),
+.badr-valeurs :is(.badr-section__title, .badr-title) {
+	color: var(--b-on-dark);
+}
+
+.badr-impact .badr-section__intro,
+.badr-quotes .badr-section__intro,
+.badr-valeurs .badr-section__intro {
+	color: #d9cfc2;
+}
+
+.badr-impact .badr-eyebrow,
+.badr-quotes .badr-eyebrow,
+.badr-valeurs .badr-eyebrow,
+.badr-bank__hero .badr-eyebrow {
+	color: var(--b-gold);
+}
+
+.badr-impact .badr-em,
+.badr-quotes .badr-em,
+.badr-valeurs .badr-em {
+	color: var(--b-gold);
+}
+
+/* Le mot mis en avant bascule dans le serif italique coloré. C'est le seul
+   endroit où les deux familles se touchent — et ça se voit. */
+.badr-em {
+	font-family: var(--wp--preset--font-family--display);
+	font-style: italic;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	color: var(--b-accent-d);
+	padding-inline-end: 0.06em;
+}
+
+.badr-section--ink .badr-em,
+.badr-band-dark .badr-em {
+	color: var(--b-gold);
+}
+
+/* Déclaration : le serif prend toute la place, une fois par page au plus. */
+.badr-statement {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 400;
+	font-size: clamp(2.25rem, 1.1rem + 4.2vw, 4.75rem);
+	line-height: 1.02;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+	color: var(--b-ink);
+	max-inline-size: 22ch;
+}
+
+.badr-section--ink .badr-statement,
+.badr-band-dark .badr-statement {
+	color: var(--b-on-dark);
+}
+
+.badr-section__intro,
+.badr-lead {
+	margin: 1.25rem 0 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: clamp(1.0625rem, 1rem + 0.28vw, 1.25rem);
+	line-height: 1.66;
+	color: var(--b-muted);
+	max-inline-size: 44ch;
+}
+
+.badr-section--ink .badr-section__intro,
+.badr-band-dark .badr-section__intro,
+.badr-section--ink .badr-lead,
+.badr-band-dark .badr-lead {
+	color: var(--b-on-dark-muted);
+}
+
+/* En-tête de section : titre et intro solidaires, jamais séparés par du vide. */
+.badr-head {
+	display: grid;
+	gap: clamp(1rem, 2vw, 1.75rem);
+	align-items: end;
+	margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+@media (min-width: 56rem) {
+	.badr-head--split {
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+		gap: clamp(2rem, 5vw, 4.5rem);
+	}
+
+	.badr-head--split .badr-section__intro {
+		margin-top: 0;
+		padding-bottom: 0.4rem;
+	}
+}
+
+.badr-head__aside {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.875rem;
+}
+
+/* Filet décoratif reliant deux sections liées. */
+.badr-tie {
+	display: block;
+	inline-size: 1px;
+	block-size: clamp(2.5rem, 6vw, 5rem);
+	margin: 0 auto;
+	border: 0;
+	background: linear-gradient(to bottom, transparent, var(--b-accent));
+	opacity: 0.5;
+}
+
+/* ==========================================================================
+   5. MOUVEMENT
+   --------------------------------------------------------------------------
+   Un seul vocabulaire, appliqué par [data-reveal]. Sans JavaScript, rien
+   n'est masqué : la règle ne s'applique que sous « .js ».
+   ========================================================================== */
+
+.js [data-reveal] {
+	--b-rv-delay: 0ms;
+	transition:
+		opacity 780ms var(--b-out) var(--b-rv-delay),
+		transform 900ms var(--b-out) var(--b-rv-delay),
+		clip-path 1000ms var(--b-out) var(--b-rv-delay);
+	will-change: opacity, transform;
+}
+
+.js [data-reveal="up"],
+.js .badr-reveal:not(.is-visible) {
+	opacity: 0;
+	transform: translateY(28px);
+}
+
+.js [data-reveal="fade"] {
+	opacity: 0;
+}
+
+/* Marge négative volontaire : un titre serré déborde légèrement de sa boîte,
+   et un masque calé pile sur le bord lui rognait le haut des lettres. */
+.js [data-reveal="mask"] {
+	opacity: 0;
+	clip-path: inset(-0.35em -0.6em 102% -0.6em);
+	transform: translateY(14px);
+}
+
+.js [data-reveal="mask"].is-visible {
+	clip-path: inset(-0.35em -0.6em -0.35em -0.6em);
+}
+
+.js [data-reveal="clip"] {
+	clip-path: inset(0 0 0 100%);
+}
+
+.js [data-reveal="rise"] {
+	opacity: 0;
+	transform: translateY(48px) scale(0.985);
+}
+
+.js [data-reveal].is-visible,
+.js .badr-reveal.is-visible {
+	opacity: 1;
+	transform: none;
+	clip-path: inset(0 0 0 0);
+}
+
+/* Ancien nom, conservé pour les pages non recomposées. */
+.js .badr-reveal {
+	transition:
+		opacity 780ms var(--b-out),
+		transform 900ms var(--b-out);
+}
+
+/* Cascade : l'index est posé par le script. */
+.js [data-reveal-group] > * {
+	--b-rv-delay: calc(var(--b-i, 0) * 85ms);
+}
+
+/* Tracé SVG progressif. */
+.js [data-draw] {
+	stroke-dasharray: var(--b-len, 1000);
+	stroke-dashoffset: var(--b-len, 1000);
+	transition: stroke-dashoffset 1800ms var(--b-out) var(--b-rv-delay, 0ms);
+}
+
+.js [data-draw].is-visible {
+	stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	.js [data-reveal],
+	.js .badr-reveal {
+		opacity: 1 !important;
+		transform: none !important;
+		clip-path: none !important;
+		transition: none !important;
+	}
+
+	.js [data-draw] {
+		stroke-dashoffset: 0 !important;
+		transition: none !important;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+	}
+}
+
+/* ==========================================================================
+   6. LE FIL — signature du site
+   --------------------------------------------------------------------------
+   Une ligne dessinée traverse les sections d'une page, entre et sort toujours
+   au même x : visuellement, c'est un seul fil continu qui relie l'ouverture,
+   les événements, l'impact, les programmes et les témoignages. Sur la page
+   « À propos », le même fil devient le parcours des objectifs.
+   ========================================================================== */
+
+.badr-fil {
+	position: absolute;
+	inset-block: 0;
+	left: max(0.5rem, calc((100vw - var(--b-wide)) / 2 - 2.75rem));
+	inline-size: 88px;
+	z-index: -1;
+	pointer-events: none;
+	overflow: visible;
+}
+
+.badr-fil svg {
+	inline-size: 100%;
+	block-size: 100%;
+	display: block;
+	overflow: visible;
+}
+
+.badr-fil path {
+	fill: none;
+	stroke: var(--b-accent);
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	opacity: 0.5;
+}
+
+.badr-fil circle {
+	fill: var(--b-accent);
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: center;
+	transition: opacity 600ms var(--b-out) 900ms, transform 700ms var(--b-spring) 900ms;
+	transform: scale(0.3);
+}
+
+.badr-fil.is-visible circle {
+	opacity: 0.9;
+	transform: scale(1);
+}
+
+.badr-section--ink .badr-fil path,
+.badr-band-dark .badr-fil path {
+	stroke: var(--b-gold);
+	opacity: 0.45;
+}
+
+@media (max-width: 74rem) {
+	.badr-fil {
+		display: none;
+	}
+}
+
+/* ==========================================================================
+   7. BOUTONS ET LIENS
+   ========================================================================== */
+
+.badr-btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	min-height: 48px;
+	padding: 0.875rem 1.75rem;
+	border: 1.5px solid transparent;
+	border-radius: var(--b-r-pill);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.2;
+	text-decoration: none;
+	cursor: pointer;
+	overflow: hidden;
+	isolation: isolate;
+	transition:
+		transform var(--b-fast) var(--b-ease),
+		background-color var(--b-base) var(--b-ease),
+		color var(--b-base) var(--b-ease),
+		border-color var(--b-base) var(--b-ease),
+		box-shadow var(--b-base) var(--b-ease);
+}
+
+/* Micro-interaction : un voile qui monte depuis le bas au survol. */
+.badr-btn::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--b-accent);
+	transform: translateY(101%);
+	transition: transform 420ms var(--b-out);
+}
+
+.badr-btn:hover::before,
+.badr-btn:focus-visible::before {
+	transform: translateY(0);
+}
+
+.badr-btn svg {
+	flex: none;
+	transition: transform var(--b-base) var(--b-out);
+}
+
+.badr-btn:hover svg {
+	transform: translateX(4px);
+}
+
+.badr-btn--solid,
+.badr-btn--primary {
+	background: var(--b-ink);
+	color: var(--b-ivory);
+	border-color: var(--b-ink);
+	box-shadow: var(--b-shadow-1);
+}
+
+.badr-btn--solid:hover,
+.badr-btn--primary:hover,
+.badr-btn--solid:focus-visible,
+.badr-btn--primary:focus-visible {
+	color: #fff;
+	border-color: var(--b-accent);
+	transform: translateY(-2px);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-btn--outline {
+	background: transparent;
+	color: var(--b-ink);
+	border-color: var(--b-line);
+}
+
+.badr-btn--outline:hover,
+.badr-btn--outline:focus-visible {
+	color: #fff;
+	border-color: var(--b-accent);
+	transform: translateY(-2px);
+}
+
+.badr-btn--ghost {
+	background: transparent;
+	color: var(--b-on-dark);
+	border-color: var(--b-line-dark);
+}
+
+.badr-btn--ghost:hover,
+.badr-btn--ghost:focus-visible {
+	color: var(--b-ink);
+	border-color: var(--b-gold);
+}
+
+.badr-btn--ghost::before {
+	background: var(--b-gold);
+}
+
+.badr-section--ink .badr-btn--outline,
+.badr-band-dark .badr-btn--outline {
+	color: var(--b-on-dark);
+	border-color: var(--b-line-dark);
+}
+
+.badr-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.875rem;
+	margin-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* Lien texte animé : le soulignement se dessine au survol. */
+.badr-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-family: var(--wp--preset--font-family--body);
+	font-weight: 700;
+	font-size: 1rem;
+	color: var(--b-accent-d);
+	text-decoration: none;
+	background-image: linear-gradient(currentColor, currentColor);
+	background-size: 0% 1.5px;
+	background-position: 0 100%;
+	background-repeat: no-repeat;
+	transition: background-size 380ms var(--b-out), color var(--b-base) var(--b-ease);
+	padding-bottom: 2px;
+}
+
+.badr-link:hover,
+.badr-link:focus-visible {
+	background-size: 100% 1.5px;
+}
+
+.badr-link svg {
+	transition: transform var(--b-base) var(--b-out);
+}
+
+.badr-link:hover svg {
+	transform: translateX(4px);
+}
+
+.badr-section--ink .badr-link,
+.badr-band-dark .badr-link {
+	color: var(--b-gold);
+}
+
+/* ==========================================================================
+   8. EN-TÊTE
+   ========================================================================== */
+
+.badr-header {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	transition: background-color var(--b-base) var(--b-ease), box-shadow var(--b-base) var(--b-ease);
+}
+
+.badr-header::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: color-mix(in srgb, var(--b-ivory) 86%, transparent);
+	backdrop-filter: blur(14px) saturate(140%);
+	-webkit-backdrop-filter: blur(14px) saturate(140%);
+	border-bottom: 1px solid var(--b-line-soft);
+	opacity: 0;
+	transition: opacity var(--b-base) var(--b-ease);
+}
+
+.badr-header.is-collee::after {
+	opacity: 1;
+}
+
+.badr-header__inner {
+	display: flex;
+	align-items: center;
+	gap: clamp(1rem, 3vw, 2.5rem);
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding: 0.875rem var(--b-gutter);
+}
+
+.badr-header .badr-logo {
+	flex: none;
+	margin: 0;
+}
+
+.badr-header .badr-logo img,
+.badr-header .wp-block-site-logo img {
+	inline-size: clamp(58px, 6vw, 76px);
+	block-size: auto;
+	border-radius: var(--b-r-sm);
+	transition: transform var(--b-base) var(--b-spring);
+}
+
+.badr-header .badr-logo:hover img {
+	transform: scale(1.05) rotate(-1.5deg);
+}
+
+.badr-header .wp-block-navigation {
+	margin-inline-start: auto;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	font-weight: 600;
+}
+
+.badr-header .wp-block-navigation-item__content {
+	position: relative;
+	padding-block: 0.5rem;
+	color: var(--b-ink);
+	text-decoration: none;
+	transition: color var(--b-base) var(--b-ease);
+}
+
+.badr-header .wp-block-navigation-item__content::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	inline-size: 100%;
+	block-size: 2px;
+	background: var(--b-amber);
+	border-radius: 2px;
+	transform: scaleX(0);
+	transform-origin: right center;
+	transition: transform 380ms var(--b-out);
+}
+
+.badr-header .wp-block-navigation-item__content:hover::after,
+.badr-header .wp-block-navigation-item.current-menu-item .wp-block-navigation-item__content::after {
+	transform: scaleX(1);
+	transform-origin: left center;
+}
+
+/* Sous-menus : ouverture douce, pas d'apparition sèche. */
+.badr-header .wp-block-navigation__submenu-container {
+	border: 1px solid var(--b-line-soft);
+	border-radius: var(--b-r-md);
+	background: var(--b-ivory);
+	box-shadow: var(--b-shadow-2);
+	padding: 0.5rem;
+	min-inline-size: 15rem;
+	transform: translateY(-8px);
+	opacity: 0;
+	transition: opacity 240ms var(--b-ease), transform 280ms var(--b-out);
+}
+
+.badr-header .wp-block-navigation-item:hover > .wp-block-navigation__submenu-container,
+.badr-header .wp-block-navigation-item:focus-within > .wp-block-navigation__submenu-container {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.badr-header .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
+	border-radius: var(--b-r-sm);
+	padding: 0.6rem 0.75rem;
+}
+
+.badr-header .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover {
+	background: var(--b-sand);
+}
+
+.badr-header .wp-block-navigation__submenu-container .wp-block-navigation-item__content::after {
+	display: none;
+}
+
+.badr-header__cta {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 44px;
+	padding: 0.6rem 1.25rem;
+	border-radius: var(--b-r-pill);
+	background: var(--b-ink);
+	color: var(--b-ivory);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	text-decoration: none;
+	transition: background-color var(--b-base) var(--b-ease), transform var(--b-fast) var(--b-ease);
+}
+
+.badr-header__cta:hover {
+	background: var(--b-flame);
+	color: #fff;
+	transform: translateY(-2px);
+}
+
+@media (max-width: 46rem) {
+	.badr-header__cta span {
+		display: none;
+	}
+
+	.badr-header__cta {
+		padding: 0.6rem 0.75rem;
+	}
+}
+
+/* ==========================================================================
+   9. OUVERTURE ANIMÉE
+   --------------------------------------------------------------------------
+   Tout est en CSS : l'animation joue même si le JavaScript échoue. Le script
+   ne sert qu'au bouton « Passer ».
+   ========================================================================== */
+
+.badr-hero-anime {
+	position: relative;
+	min-block-size: 100svh;
+	display: grid;
+	place-items: center;
+	padding: clamp(5rem, 12vh, 9rem) var(--b-gutter) clamp(4rem, 9vh, 6rem);
+	margin-top: calc(-1 * (clamp(58px, 6vw, 76px) + 1.75rem));
+	overflow: hidden;
+	isolation: isolate;
+	background:
+		radial-gradient(58% 46% at 50% 34%, #ffffff 0%, rgba(255, 255, 255, 0) 62%),
+		radial-gradient(90% 70% at 50% 120%, var(--b-sand-2), transparent 70%),
+		linear-gradient(180deg, var(--b-ivory) 0%, var(--b-ivory-2) 58%, var(--b-sand) 100%);
+}
+
+/* Halo coloré lent : la lumière change de teinte, jamais brutalement. */
+.badr-hero-anime::before {
+	content: "";
+	position: absolute;
+	inset: -20%;
+	z-index: -2;
+	background:
+		radial-gradient(30% 34% at 22% 30%, rgba(250, 134, 3, 0.16), transparent 68%),
+		radial-gradient(28% 32% at 78% 26%, rgba(1, 57, 84, 0.14), transparent 68%),
+		radial-gradient(30% 30% at 30% 78%, rgba(66, 156, 44, 0.14), transparent 68%),
+		radial-gradient(26% 30% at 74% 80%, rgba(227, 51, 19, 0.12), transparent 68%);
+	filter: blur(10px);
+	animation: badr-halo 26s ease-in-out infinite alternate;
+	pointer-events: none;
+}
+
+@keyframes badr-halo {
+	0% {
+		transform: scale(1) rotate(0deg);
+		opacity: 0.75;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1.12) rotate(6deg);
+		opacity: 0.85;
+	}
+}
+
+.badr-hero-anime__stage {
+	position: relative;
+	z-index: 3;
+	width: 100%;
+	max-width: 62rem;
+	margin-inline: auto;
+	text-align: center;
+}
+
+/* --- Les quatre mots ----------------------------------------------------- */
+
+.badr-hero-anime__acronyme {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: baseline;
+	gap: 0 clamp(0.5rem, 1.4vw, 1.4rem);
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 400;
+	line-height: 0.92;
+	letter-spacing: -0.03em;
+}
+
+.badr-mot {
+	display: inline-flex;
+	align-items: baseline;
+	font-size: clamp(3.5rem, 1rem + 12vw, 11rem);
+	opacity: 0;
+	animation: badr-mot-in 900ms var(--b-out) forwards;
+	animation-delay: var(--b-mot-d, 0ms);
+}
+
+.badr-mot--b {
+	--b-mot-d: 260ms;
+	--b-mot-c: var(--wp--custom--letter--b, #fa8603);
+}
+
+.badr-mot--a {
+	--b-mot-d: 520ms;
+	--b-mot-c: var(--wp--custom--letter--a, #013954);
+}
+
+.badr-mot--d {
+	--b-mot-d: 780ms;
+	--b-mot-c: var(--wp--custom--letter--d, #429c2c);
+}
+
+.badr-mot--r {
+	--b-mot-d: 1040ms;
+	--b-mot-c: var(--wp--custom--letter--r, #e33313);
+}
+
+@keyframes badr-mot-in {
+	from {
+		opacity: 0;
+		transform: translateY(0.24em) scale(0.94);
+		filter: blur(6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+		filter: blur(0);
+	}
+}
+
+.badr-mot__initiale {
+	color: var(--b-mot-c);
+	display: inline-block;
+	transition: transform var(--b-base) var(--b-spring);
+}
+
+.badr-hero-anime__acronyme:hover .badr-mot__initiale {
+	transform: translateY(-0.03em);
+}
+
+/* Le suffixe se déplie puis se replie : le mot complet est lu, puis l'acronyme
+   reste. La largeur est animée, pas l'opacité seule, sinon rien ne « bouge ». */
+.badr-mot__suffixe {
+	display: inline-flex;
+	overflow: hidden;
+	max-inline-size: 0;
+	font-size: 0.46em;
+	font-style: italic;
+	color: color-mix(in srgb, var(--b-mot-c) 78%, var(--b-ink));
+	animation: badr-suffixe 3400ms var(--b-ease) forwards;
+	animation-delay: calc(var(--b-mot-d) + 240ms);
+	white-space: nowrap;
+}
+
+.badr-mot__suffixe-txt {
+	display: inline-block;
+	transform: translateX(-6px);
+	opacity: 0;
+	animation: badr-suffixe-txt 3400ms var(--b-ease) forwards;
+	animation-delay: calc(var(--b-mot-d) + 240ms);
+}
+
+@keyframes badr-suffixe {
+	0% {
+		max-inline-size: 0;
+	}
+	18%,
+	62% {
+		max-inline-size: 8em;
+	}
+	100% {
+		max-inline-size: 0;
+	}
+}
+
+@keyframes badr-suffixe-txt {
+	0% {
+		opacity: 0;
+		transform: translateX(-6px);
+	}
+	16%,
+	60% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(-6px);
+	}
+}
+
+.badr-mot__point {
+	color: var(--wp--custom--letter--dot, #fc8d03);
+	opacity: 0;
+	animation: badr-point 600ms var(--b-spring) forwards;
+	animation-delay: calc(var(--b-mot-d) + 3200ms);
+}
+
+@keyframes badr-point {
+	from {
+		opacity: 0;
+		transform: translateY(-0.3em) scale(0.4);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* --- Nom complet, filet, slogan ------------------------------------------ */
+
+.badr-hero-anime__filet {
+	inline-size: min(24rem, 60%);
+	block-size: 1px;
+	margin: clamp(1.5rem, 3vw, 2.5rem) auto clamp(1.25rem, 2.5vw, 2rem);
+	border: 0;
+	background: linear-gradient(to right, transparent, var(--b-amber), var(--b-leaf), var(--b-flame), transparent);
+	transform: scaleX(0);
+	opacity: 0;
+	animation: badr-filet 1100ms var(--b-out) forwards;
+	animation-delay: 3500ms;
+}
+
+@keyframes badr-filet {
+	to {
+		transform: scaleX(1);
+		opacity: 0.8;
+	}
+}
+
+.badr-hero-anime__nom {
+	margin: 0 auto;
+	max-inline-size: 34ch;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.0625rem, 0.85rem + 0.9vw, 1.625rem);
+	font-weight: 500;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
+	color: var(--b-ink);
+	opacity: 0;
+	animation: badr-fade-up 1000ms var(--b-out) forwards;
+	animation-delay: 3750ms;
+}
+
+.badr-hero-anime__slogan {
+	margin: clamp(0.875rem, 2vw, 1.25rem) auto 0;
+	max-inline-size: 46ch;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: clamp(1rem, 0.95rem + 0.3vw, 1.1875rem);
+	line-height: 1.6;
+	color: var(--b-muted);
+	opacity: 0;
+	animation: badr-fade-up 1000ms var(--b-out) forwards;
+	animation-delay: 4000ms;
+}
+
+.badr-hero-anime__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.875rem;
+	margin-top: clamp(1.75rem, 3.5vw, 2.75rem);
+	opacity: 0;
+	animation: badr-fade-up 1000ms var(--b-out) forwards;
+	animation-delay: 4250ms;
+}
+
+@keyframes badr-fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.badr-hero-anime__skip {
+	position: absolute;
+	top: clamp(5.5rem, 12vh, 7.5rem);
+	right: var(--b-gutter);
+	z-index: 6;
+	min-height: 40px;
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--b-line);
+	border-radius: var(--b-r-pill);
+	background: color-mix(in srgb, var(--b-ivory) 80%, transparent);
+	color: var(--b-muted);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	cursor: pointer;
+	opacity: 0;
+	animation: badr-fade-up 600ms var(--b-out) forwards;
+	animation-delay: 900ms;
+	transition: color var(--b-base) var(--b-ease), border-color var(--b-base) var(--b-ease);
+}
+
+.badr-hero-anime__skip:hover {
+	color: var(--b-ink);
+	border-color: var(--b-ink);
+}
+
+.badr-hero-anime__cue {
+	position: absolute;
+	bottom: clamp(1.25rem, 3vh, 2.25rem);
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 4;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--b-muted);
+	opacity: 0;
+	animation: badr-fade-up 900ms var(--b-out) forwards;
+	animation-delay: 4600ms;
+}
+
+.badr-hero-anime__cue span {
+	inline-size: 1px;
+	block-size: 2.75rem;
+	background: linear-gradient(to bottom, var(--b-muted), transparent);
+	animation: badr-cue 2.4s ease-in-out infinite;
+}
+
+@keyframes badr-cue {
+	0%,
+	100% {
+		transform: scaleY(0.5);
+		transform-origin: top;
+		opacity: 0.4;
+	}
+	50% {
+		transform: scaleY(1);
+		transform-origin: top;
+		opacity: 1;
+	}
+}
+
+/* État final forcé par le bouton « Passer ». */
+.badr-hero-anime.is-terminee *,
+.badr-hero-anime.is-terminee *::before,
+.badr-hero-anime.is-terminee *::after {
+	animation-delay: 0ms !important;
+	animation-duration: 1ms !important;
+}
+
+.badr-hero-anime.is-terminee .badr-mot__suffixe {
+	animation: none;
+	max-inline-size: 0;
+}
+
+.badr-hero-anime.is-terminee .badr-mot,
+.badr-hero-anime.is-terminee .badr-mot__point,
+.badr-hero-anime.is-terminee .badr-hero-anime__nom,
+.badr-hero-anime.is-terminee .badr-hero-anime__slogan,
+.badr-hero-anime.is-terminee .badr-hero-anime__actions,
+.badr-hero-anime.is-terminee .badr-hero-anime__cue {
+	opacity: 1;
+	transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.badr-hero-anime .badr-mot,
+	.badr-hero-anime__nom,
+	.badr-hero-anime__slogan,
+	.badr-hero-anime__actions,
+	.badr-hero-anime__cue,
+	.badr-hero-anime__skip {
+		opacity: 1;
+		animation: none;
+	}
+
+	.badr-hero-anime__filet {
+		opacity: 0.8;
+		transform: none;
+		animation: none;
+	}
+
+	.badr-mot__suffixe {
+		animation: none;
+		max-inline-size: 0;
+	}
+}
+
+/* --- Couche botanique et céleste ----------------------------------------- */
+
+.badr-flore {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.badr-flore svg {
+	inline-size: 100%;
+	block-size: 100%;
+	display: block;
+}
+
+.badr-flore .stem {
+	fill: none;
+	stroke-width: 1.6;
+	stroke-linecap: round;
+	opacity: 0.62;
+	stroke-dasharray: var(--len);
+	stroke-dashoffset: var(--len);
+	animation: badr-draw 3.4s var(--b-out) forwards;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-draw {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+.badr-flore .leaf {
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: 0% 50%;
+	animation: badr-leaf 1.1s var(--b-spring) forwards;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-leaf {
+	from {
+		opacity: 0;
+		scale: 0.1 0.5;
+	}
+	to {
+		opacity: 0.5;
+		scale: 1 1;
+	}
+}
+
+.badr-flore .bloom {
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: badr-bloom 1.5s var(--b-spring) forwards;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-bloom {
+	from {
+		opacity: 0;
+		rotate: -50deg;
+		scale: 0.15;
+	}
+	70% {
+		opacity: 1;
+	}
+	to {
+		opacity: 0.95;
+		rotate: 0deg;
+		scale: 1;
+	}
+}
+
+.badr-flore .bloom .core {
+	animation: badr-core 4.5s ease-in-out infinite;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-core {
+	0%,
+	100% {
+		opacity: 0.7;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.badr-flore .star {
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: center;
+	animation:
+		badr-star-in 900ms var(--b-out) forwards,
+		badr-star-shine 5s ease-in-out infinite;
+	animation-delay: var(--d, 0s), calc(var(--d, 0s) + 900ms);
+}
+
+@keyframes badr-star-in {
+	from {
+		opacity: 0;
+		scale: 0.1;
+		rotate: -60deg;
+	}
+	to {
+		opacity: 0.85;
+		scale: 1;
+		rotate: 0deg;
+	}
+}
+
+@keyframes badr-star-shine {
+	0%,
+	100% {
+		opacity: 0.35;
+		scale: 0.9;
+	}
+	50% {
+		opacity: 0.95;
+		scale: 1.12;
+	}
+}
+
+.badr-flore .mote {
+	opacity: 0;
+	animation: badr-mote 9s ease-in-out infinite;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-mote {
+	0% {
+		opacity: 0;
+		translate: 0 12px;
+	}
+	40% {
+		opacity: 0.85;
+	}
+	100% {
+		opacity: 0;
+		translate: 0 -46px;
+	}
+}
+
+/* Rayons et anneaux derrière les lettres. */
+.badr-flore .ray {
+	fill: none;
+	stroke-width: 1;
+	opacity: 0;
+	stroke-dasharray: var(--len);
+	stroke-dashoffset: var(--len);
+	animation:
+		badr-draw 2.6s var(--b-out) forwards,
+		badr-ray-fade 2.6s ease forwards;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-ray-fade {
+	to {
+		opacity: 0.3;
+	}
+}
+
+.badr-flore .orbit {
+	fill: none;
+	stroke-width: 1;
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: badr-orbit-in 2.2s var(--b-out) forwards;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-orbit-in {
+	from {
+		opacity: 0;
+		scale: 0.86;
+		rotate: -12deg;
+	}
+	to {
+		opacity: 0.22;
+		scale: 1;
+		rotate: 0deg;
+	}
+}
+
+/* Pétales qui traversent lentement la composition. */
+.badr-flore .petal {
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: badr-petal 14s linear infinite;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes badr-petal {
+	0% {
+		opacity: 0;
+		translate: 0 0;
+		rotate: 0deg;
+	}
+	12% {
+		opacity: 0.7;
+	}
+	80% {
+		opacity: 0.45;
+	}
+	100% {
+		opacity: 0;
+		translate: 160px 220px;
+		rotate: 220deg;
+	}
+}
+
+/* Guirlande finale : le cadre floral qui se referme autour de B.A.D.R. */
+.badr-flore .garland {
+	fill: none;
+	stroke-width: 1.4;
+	stroke-linecap: round;
+	opacity: 0;
+	stroke-dasharray: var(--len);
+	stroke-dashoffset: var(--len);
+	animation:
+		badr-draw 2.8s var(--b-out) forwards,
+		badr-ray-fade 2.8s ease forwards;
+	animation-delay: var(--d, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.badr-flore .stem,
+	.badr-flore .ray,
+	.badr-flore .garland {
+		stroke-dashoffset: 0;
+		opacity: 0.4;
+		animation: none;
+	}
+
+	.badr-flore .leaf,
+	.badr-flore .bloom,
+	.badr-flore .star,
+	.badr-flore .orbit {
+		opacity: 0.5;
+		animation: none;
+	}
+
+	.badr-flore .mote,
+	.badr-flore .petal {
+		display: none;
+	}
+}
+
+@media (max-width: 48rem) {
+	.badr-flore {
+		opacity: 0.7;
+	}
+
+	.badr-flore .petal,
+	.badr-flore .mote {
+		display: none;
+	}
+}
+
+/* ==========================================================================
+   10. ÉVÉNEMENTS À VENIR
+   ========================================================================== */
+
+.badr-events {
+	--b-accent: var(--b-flame);
+	--b-accent-d: var(--b-flame-d);
+}
+
+.badr-events__grid {
+	display: grid;
+	gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+@media (min-width: 62rem) {
+	.badr-events__grid {
+		grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+		align-items: start;
+	}
+}
+
+/* --- L'événement vedette -------------------------------------------------- */
+
+.badr-event-lead {
+	position: relative;
+	display: grid;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+	min-block-size: clamp(22rem, 42vw, 32rem);
+	text-decoration: none;
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-event-lead__media {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+}
+
+.badr-event-lead__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transform: scale(1.04);
+	transition: transform 900ms var(--b-out);
+}
+
+.badr-event-lead:hover .badr-event-lead__media img {
+	transform: scale(1.09);
+}
+
+.badr-event-lead__media::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(160deg, rgba(16, 48, 58, 0.2) 0%, rgba(16, 48, 58, 0.72) 52%, rgba(16, 48, 58, 0.94) 100%);
+}
+
+.badr-event-lead__body {
+	position: relative;
+	z-index: 1;
+	align-self: end;
+	display: grid;
+	gap: 0.875rem;
+	padding: clamp(1.75rem, 4vw, 3rem);
+}
+
+.badr-event-lead__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.75rem, 1.1rem + 2.2vw, 3rem);
+	font-weight: 600;
+	line-height: 1.06;
+	letter-spacing: -0.026em;
+	color: var(--b-on-dark);
+	max-inline-size: 18ch;
+}
+
+.badr-event-lead__excerpt {
+	margin: 0;
+	max-inline-size: 46ch;
+	color: var(--b-on-dark-muted);
+	font-size: 1.0625rem;
+	line-height: 1.6;
+}
+
+/* Date : traitement typographique fort, pas une simple ligne de texte. */
+.badr-date {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	font-family: var(--wp--preset--font-family--display);
+	line-height: 1;
+	color: var(--b-gold);
+}
+
+.badr-date__day {
+	font-size: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+	letter-spacing: -0.03em;
+}
+
+.badr-date__rest {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--b-on-dark-muted);
+}
+
+.badr-date__month {
+	color: var(--b-gold);
+	font-weight: 600;
+}
+
+.badr-event-lead__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1.25rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	color: var(--b-on-dark-muted);
+}
+
+.badr-event-lead__meta li {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+}
+
+.badr-event-lead__meta svg {
+	flex: none;
+	opacity: 0.8;
+}
+
+/* --- Les deux aperçus ----------------------------------------------------- */
+
+.badr-events__side {
+	display: grid;
+	gap: clamp(1rem, 2vw, 1.5rem);
+	align-content: start;
+}
+
+.badr-event-mini {
+	position: relative;
+	display: grid;
+	grid-template-columns: clamp(5.5rem, 12vw, 8rem) minmax(0, 1fr);
+	gap: clamp(0.875rem, 2vw, 1.375rem);
+	align-items: center;
+	padding: clamp(0.875rem, 2vw, 1.25rem);
+	border-radius: var(--b-r-md);
+	background: var(--b-ivory);
+	border: 1px solid var(--b-line-soft);
+	text-decoration: none;
+	transition: transform var(--b-base) var(--b-out), box-shadow var(--b-base) var(--b-ease), border-color var(--b-base) var(--b-ease);
+}
+
+.badr-event-mini:hover {
+	transform: translateY(-4px);
+	border-color: color-mix(in srgb, var(--b-accent) 40%, transparent);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-event-mini__media {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--b-r-sm);
+	aspect-ratio: 1;
+	background: var(--b-sand);
+}
+
+.badr-event-mini__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 700ms var(--b-out);
+}
+
+.badr-event-mini:hover .badr-event-mini__media img {
+	transform: scale(1.07);
+}
+
+.badr-event-mini__date {
+	display: block;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+	margin-bottom: 0.4rem;
+}
+
+.badr-event-mini__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.1875rem;
+	font-weight: 600;
+	line-height: 1.24;
+	letter-spacing: -0.018em;
+	color: var(--b-ink);
+}
+
+.badr-event-mini__place {
+	margin: 0.4rem 0 0;
+	font-size: 0.9375rem;
+	color: var(--b-muted);
+}
+
+/* --- État vide, entièrement composé -------------------------------------- */
+
+.badr-events__empty {
+	position: relative;
+	display: grid;
+	place-items: center;
+	gap: 1.25rem;
+	min-block-size: clamp(20rem, 38vw, 28rem);
+	padding: clamp(2rem, 5vw, 4rem);
+	text-align: center;
+	border-radius: var(--b-r-lg);
+	background:
+		radial-gradient(70% 90% at 50% 0%, color-mix(in srgb, var(--b-accent) 10%, transparent), transparent 70%),
+		var(--b-ivory);
+	border: 1px dashed color-mix(in srgb, var(--b-accent) 34%, transparent);
+	overflow: hidden;
+}
+
+.badr-events__empty-mark {
+	inline-size: clamp(4.5rem, 9vw, 7rem);
+	block-size: auto;
+	color: var(--b-accent);
+	opacity: 0.9;
+}
+
+.badr-events__empty-title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.5rem, 1rem + 1.8vw, 2.25rem);
+	font-weight: 400;
+	line-height: 1.15;
+	color: var(--b-ink);
+	max-inline-size: 22ch;
+}
+
+.badr-events__empty-note {
+	margin: 0;
+	max-inline-size: 44ch;
+	color: var(--b-muted);
+	font-size: 1.0625rem;
+	line-height: 1.6;
+}
+
+.badr-events__empty-side {
+	display: grid;
+	gap: 1rem;
+	align-content: center;
+	padding: clamp(1.5rem, 3vw, 2.25rem);
+	border-radius: var(--b-r-md);
+	background: var(--b-sand);
+}
+
+.badr-events__empty-side p {
+	margin: 0;
+	color: var(--b-muted);
+	font-size: 1rem;
+	line-height: 1.6;
+}
+
+.badr-events__empty-side h3 {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.25rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: var(--b-ink);
+}
+
+/* ==========================================================================
+   11. COMPTEURS D'IMPACT
+   --------------------------------------------------------------------------
+   Pas quatre boîtes bordées : une composition reliée, chiffres en très grand
+   serif, filets qui se tracent entre eux, champs de couleur qui se chevauchent.
+   ========================================================================== */
+
+.badr-impact {
+	--b-accent: var(--b-gold);
+	position: relative;
+	overflow: hidden;
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+}
+
+/* Un seul fond cohérent : deux halos larges qui dérivent lentement sur une
+   encre profonde. Les quatre voiles superposés d'avant se mélangeaient en une
+   teinte boueuse et écrasaient le texte. */
+.badr-impact::before {
+	content: "";
+	position: absolute;
+	inset: -10%;
+	z-index: 0;
+	background:
+		radial-gradient(38% 46% at 14% 8%, rgba(250, 134, 3, 0.22), transparent 70%),
+		radial-gradient(42% 50% at 88% 92%, rgba(16, 132, 194, 0.2), transparent 72%);
+	animation: badr-impact-drift 34s ease-in-out infinite alternate;
+	pointer-events: none;
+}
+
+/* Lignes de lumière qui traversent la bande, très discrètes. */
+.badr-impact::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background-image:
+		linear-gradient(105deg, transparent 38%, rgba(255, 250, 243, 0.05) 50%, transparent 62%);
+	pointer-events: none;
+}
+
+@keyframes badr-impact-drift {
+	from {
+		transform: scale(1) translate3d(0, 0, 0);
+	}
+	to {
+		transform: scale(1.12) translate3d(-2%, -2%, 0);
+	}
+}
+
+.badr-impact > * {
+	position: relative;
+	z-index: 1;
+}
+
+.badr-impact__grid {
+	display: grid;
+	gap: 0;
+	margin-top: clamp(2.5rem, 5vw, 4rem);
+	border-top: 1px solid var(--b-line-dark);
+}
+
+@media (min-width: 40rem) {
+	.badr-impact__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 68rem) {
+	.badr-impact__grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+.badr-stat {
+	position: relative;
+	display: grid;
+	gap: 0.75rem;
+	align-content: start;
+	padding: clamp(1.75rem, 3.5vw, 2.75rem) clamp(1rem, 2.5vw, 2rem) clamp(1.75rem, 3.5vw, 2.75rem) 0;
+	border-bottom: 1px solid var(--b-line-dark);
+}
+
+@media (min-width: 40rem) {
+	.badr-stat:nth-child(odd) {
+		padding-right: clamp(1.5rem, 3vw, 2.5rem);
+	}
+
+	.badr-stat:nth-child(even) {
+		padding-left: clamp(1.5rem, 3vw, 2.5rem);
+		border-left: 1px solid var(--b-line-dark);
+	}
+}
+
+@media (min-width: 68rem) {
+	.badr-stat {
+		border-bottom: 0;
+		padding-inline: clamp(1.25rem, 2.4vw, 2.25rem);
+	}
+
+	.badr-stat:first-child {
+		padding-left: 0;
+	}
+
+	.badr-stat + .badr-stat {
+		border-left: 1px solid var(--b-line-dark);
+	}
+}
+
+/* Icône : couleur pleine du logo, jamais délavée, et tracée à l'entrée. */
+.badr-stat__icon {
+	inline-size: 3rem;
+	block-size: 3rem;
+	color: var(--b-accent);
+	filter: drop-shadow(0 0 18px color-mix(in srgb, var(--b-accent) 45%, transparent));
+}
+
+.badr-stat__icon :is(path, circle, line) {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.7;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.js .badr-stat__icon :is(path, circle) {
+	stroke-dasharray: 260;
+	stroke-dashoffset: 260;
+	transition: stroke-dashoffset 1500ms var(--b-out) calc(var(--b-i, 0) * 160ms);
+}
+
+.js .badr-stat.is-visible .badr-stat__icon :is(path, circle) {
+	stroke-dashoffset: 0;
+}
+
+/* Le chiffre : grotesque gras, blanc ivoire franc. Le serif fin se lisait mal
+   sur fond sombre — c'était le défaut principal de cette bande. */
+.badr-stat__num {
+	display: block;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(3.25rem, 2rem + 4.6vw, 6.25rem);
+	font-weight: 800;
+	line-height: 0.92;
+	letter-spacing: -0.045em;
+	color: #fffaf3;
+	font-variant-numeric: tabular-nums;
+	text-wrap: nowrap;
+}
+
+.badr-stat__suffix {
+	color: var(--b-accent);
+	font-weight: 700;
+}
+
+/* Impulsion à la fin du comptage : le chiffre se pose, il ne s'arrête pas net. */
+.badr-stat__num.is-counted {
+	animation: badr-count-pop 900ms var(--b-spring);
+}
+
+@keyframes badr-count-pop {
+	0% {
+		transform: scale(1);
+		text-shadow: none;
+	}
+	35% {
+		transform: scale(1.045);
+		text-shadow: 0 0 34px color-mix(in srgb, var(--b-accent) 70%, transparent);
+	}
+	100% {
+		transform: scale(1);
+		text-shadow: 0 0 0 transparent;
+	}
+}
+
+.badr-stat__label {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.125rem;
+	font-weight: 700;
+	line-height: 1.3;
+	letter-spacing: -0.016em;
+	color: #fffaf3;
+	max-inline-size: 18ch;
+}
+
+/* Note : opacité franche, pas un gris fantôme. */
+.badr-stat__note {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	line-height: 1.55;
+	color: #d9cfc2;
+	max-inline-size: 28ch;
+}
+
+.badr-impact__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.badr-impact__foot p {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: #d9cfc2;
+}
+
+/* ==========================================================================
+   12. PROGRAMMES — trois chapitres, index collant
+   ========================================================================== */
+
+.badr-progs {
+	position: relative;
+}
+
+.badr-progs__layout {
+	display: grid;
+	gap: clamp(2rem, 5vw, 4.5rem);
+}
+
+@media (min-width: 68rem) {
+	.badr-progs__layout {
+		grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+		align-items: start;
+	}
+}
+
+/* Index collant : la scène change, l'index reste. */
+.badr-progs__index {
+	display: none;
+}
+
+@media (min-width: 68rem) {
+	.badr-progs__index {
+		display: grid;
+		gap: 0.25rem;
+		position: sticky;
+		top: clamp(6rem, 14vh, 9rem);
+		align-content: start;
+	}
+}
+
+.badr-progs__index-item {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.875rem;
+	align-items: baseline;
+	padding: 0.75rem 0;
+	border-top: 1px solid var(--b-line);
+	color: var(--b-muted);
+	text-decoration: none;
+	transition: color var(--b-base) var(--b-ease), padding-left var(--b-base) var(--b-out);
+}
+
+.badr-progs__index-item:last-child {
+	border-bottom: 1px solid var(--b-line);
+}
+
+.badr-progs__index-item span:first-child {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
+	color: var(--b-accent-d);
+}
+
+.badr-progs__index-item span:last-child {
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.0625rem;
+	font-weight: 500;
+	letter-spacing: -0.015em;
+	line-height: 1.3;
+}
+
+.badr-progs__index-item:hover,
+.badr-progs__index-item.is-active {
+	color: var(--b-ink);
+	padding-left: 0.5rem;
+}
+
+.badr-progs__index-item.is-active span:last-child {
+	font-weight: 700;
+}
+
+.badr-progs__chapters {
+	display: grid;
+	gap: clamp(3rem, 7vw, 6rem);
+}
+
+/* --- Un chapitre ---------------------------------------------------------- */
+
+.badr-prog {
+	position: relative;
+	scroll-margin-top: 7rem;
+}
+
+.badr-prog__inner {
+	display: grid;
+	gap: clamp(1.5rem, 3vw, 2.5rem);
+	align-items: center;
+}
+
+@media (min-width: 54rem) {
+	.badr-prog__inner {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+		gap: clamp(2rem, 4.5vw, 4rem);
+	}
+
+	/* Alternance : le visuel passe à gauche un chapitre sur deux. */
+	.badr-prog:nth-child(even) .badr-prog__media {
+		order: -1;
+	}
+}
+
+.badr-prog__body {
+	position: relative;
+	display: grid;
+	gap: 0.25rem;
+	align-content: start;
+}
+
+.badr-prog__folio {
+	display: block;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(3.5rem, 2rem + 5vw, 6.5rem);
+	line-height: 0.8;
+	letter-spacing: -0.04em;
+	color: color-mix(in srgb, var(--b-accent) 26%, transparent);
+	margin-bottom: 0.5rem;
+}
+
+.badr-prog__eyebrow {
+	margin: 0 0 0.75rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.78125rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-prog__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+	font-weight: 600;
+	line-height: 1.08;
+	letter-spacing: -0.026em;
+	color: var(--b-ink);
+	max-inline-size: 16ch;
+}
+
+.badr-prog__lead {
+	margin: 1rem 0 0;
+	font-size: 1.0625rem;
+	line-height: 1.68;
+	color: var(--b-muted);
+	max-inline-size: 46ch;
+}
+
+.badr-prog__list {
+	margin: 1.5rem 0 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 0;
+	max-inline-size: 32rem;
+}
+
+.badr-prog__list li {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.75rem;
+	align-items: center;
+	padding: 0.75rem 0;
+	border-top: 1px solid var(--b-line-soft);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--b-ink);
+}
+
+.badr-prog__list li:last-child {
+	border-bottom: 1px solid var(--b-line-soft);
+}
+
+.badr-prog__list li::before {
+	content: "";
+	inline-size: 7px;
+	block-size: 7px;
+	border-radius: 50%;
+	background: var(--b-accent);
+	transform: scale(0.6);
+	transition: transform var(--b-base) var(--b-spring);
+}
+
+.badr-prog__list li:hover::before {
+	transform: scale(1.2);
+}
+
+.badr-prog .badr-btn {
+	margin-top: 1.75rem;
+	justify-self: start;
+}
+
+/* Visuel : révélé par un balayage, jamais posé sèchement. */
+.badr-prog__media {
+	position: relative;
+	border-radius: var(--b-r-lg);
+	overflow: hidden;
+	aspect-ratio: 4 / 3.4;
+	background: var(--b-sand);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-prog__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 1200ms var(--b-out);
+}
+
+.badr-prog:hover .badr-prog__media img {
+	transform: scale(1.045);
+}
+
+/* Champ de couleur qui déborde derrière l'image : la profondeur demandée. */
+.badr-prog__media::before {
+	content: "";
+	position: absolute;
+	inset: auto -12% -18% -12%;
+	block-size: 60%;
+	z-index: -1;
+	background: color-mix(in srgb, var(--b-accent) 20%, transparent);
+	filter: blur(40px);
+	pointer-events: none;
+}
+
+.badr-prog__abstract {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(60% 60% at 30% 25%, color-mix(in srgb, var(--b-accent) 55%, transparent), transparent 70%),
+		radial-gradient(70% 70% at 78% 82%, color-mix(in srgb, var(--b-accent) 30%, transparent), transparent 70%),
+		var(--b-sand);
+}
+
+.badr-prog__tag {
+	position: absolute;
+	left: clamp(0.875rem, 2vw, 1.25rem);
+	bottom: clamp(0.875rem, 2vw, 1.25rem);
+	z-index: 2;
+	padding: 0.5rem 1rem;
+	border-radius: var(--b-r-pill);
+	background: color-mix(in srgb, var(--b-ivory) 92%, transparent);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	color: var(--b-ink);
+	box-shadow: var(--b-shadow-1);
+}
+
+.badr-prog__accentbar {
+	display: none;
+}
+
+/* ==========================================================================
+   13. VITRINE DES ESPACES
+   ========================================================================== */
+
+.badr-vitrine {
+	position: relative;
+	--b-accent: var(--b-azure);
+	--b-accent-d: var(--b-azure-d);
+	overflow: hidden;
+	background: var(--b-sand);
+	padding-block: var(--b-sect);
+}
+
+.badr-vitrine::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background: radial-gradient(60% 60% at 88% 6%, color-mix(in srgb, var(--b-accent) 12%, transparent), transparent 66%);
+	transition: background 900ms var(--b-ease);
+	pointer-events: none;
+}
+
+.badr-vitrine__inner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+}
+
+.badr-vitrine__head {
+	margin-bottom: clamp(2.5rem, 5vw, 4rem);
+	max-inline-size: 46rem;
+}
+
+.badr-vitrine__grid {
+	display: grid;
+	gap: clamp(1.5rem, 3vw, 3rem);
+}
+
+@media (min-width: 62rem) {
+	.badr-vitrine__grid {
+		grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+		align-items: start;
+	}
+}
+
+/* --- Le sélecteur --------------------------------------------------------- */
+
+.badr-vitrine__nav {
+	display: grid;
+	gap: 0;
+}
+
+@media (min-width: 62rem) {
+	.badr-vitrine__nav {
+		position: sticky;
+		top: clamp(6rem, 14vh, 9rem);
+	}
+}
+
+.badr-vitrine__tab {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.875rem;
+	align-items: center;
+	width: 100%;
+	min-height: 56px;
+	padding: 1rem 0.75rem 1rem 0;
+	border: 0;
+	border-top: 1px solid var(--b-line);
+	background: none;
+	text-align: left;
+	cursor: pointer;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.3125rem);
+	font-weight: 500;
+	letter-spacing: -0.018em;
+	color: var(--b-muted);
+	transition: color var(--b-base) var(--b-ease), padding-left var(--b-base) var(--b-out);
+}
+
+.badr-vitrine__tab:last-child {
+	border-bottom: 1px solid var(--b-line);
+}
+
+.badr-vitrine__tab-num {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
+	color: var(--badr-accent, var(--b-accent));
+	opacity: 0.7;
+}
+
+/* Le trait d'accent glisse depuis la gauche sur l'onglet actif. */
+.badr-vitrine__tab::before {
+	content: "";
+	position: absolute;
+	left: -0.75rem;
+	top: 50%;
+	inline-size: 3px;
+	block-size: 0;
+	background: var(--badr-accent, var(--b-accent));
+	border-radius: 3px;
+	transform: translateY(-50%);
+	transition: block-size 380ms var(--b-out), height 380ms var(--b-out);
+}
+
+.badr-vitrine__tab[aria-selected="true"] {
+	color: var(--b-ink);
+	font-weight: 700;
+	padding-left: 0.75rem;
+}
+
+.badr-vitrine__tab[aria-selected="true"]::before {
+	height: 60%;
+}
+
+.badr-vitrine__tab:hover {
+	color: var(--b-ink);
+}
+
+/* --- Les panneaux --------------------------------------------------------- */
+
+.badr-vitrine__panels {
+	position: relative;
+}
+
+/* La propriété « display » n'est jamais posée ici : elle est décidée plus bas,
+   afin que l'attribut « hidden » l'emporte une fois la vitrine interactive.
+   Une règle générale « display: grid » masquerait cet attribut et les six
+   panneaux resteraient empilés sous les onglets. */
+.badr-vitrine__panel {
+	gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+@media (min-width: 46rem) {
+	.badr-vitrine__panel {
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+		gap: clamp(1.5rem, 3vw, 2.75rem);
+		align-items: start;
+	}
+
+	.badr-vitrine__media {
+		grid-row: span 3;
+	}
+}
+
+/* Tant que le script n'a pas pris la main, tous les panneaux restent lisibles :
+   ici, et seulement ici, on passe outre « hidden » volontairement. */
+.badr-vitrine:not(.is-interactive) .badr-vitrine__panel {
+	display: grid;
+	margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.badr-vitrine.is-interactive .badr-vitrine__panel:not([hidden]) {
+	display: grid;
+	animation: badr-panel-in 620ms var(--b-out) both;
+}
+
+@keyframes badr-panel-in {
+	from {
+		opacity: 0;
+		transform: translateY(18px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.badr-vitrine__media {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	aspect-ratio: 4 / 5;
+	background: var(--b-sand-deep);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-vitrine__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+}
+
+.badr-vitrine__abstract {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(55% 55% at 32% 28%, color-mix(in srgb, var(--badr-accent, var(--b-accent)) 55%, transparent), transparent 70%),
+		radial-gradient(65% 65% at 76% 80%, color-mix(in srgb, var(--badr-accent, var(--b-accent)) 28%, transparent), transparent 70%),
+		var(--b-sand-deep);
+}
+
+.badr-vitrine__badge {
+	position: absolute;
+	left: 1rem;
+	top: 1rem;
+	z-index: 2;
+	padding: 0.45rem 0.9rem;
+	border-radius: var(--b-r-pill);
+	background: var(--badr-accent, var(--b-accent));
+	color: #fff;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+}
+
+.badr-vitrine__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
+	font-weight: 600;
+	line-height: 1.08;
+	letter-spacing: -0.026em;
+	color: var(--b-ink);
+}
+
+.badr-vitrine__lead {
+	margin: 0;
+	font-size: 1.0625rem;
+	line-height: 1.68;
+	color: var(--b-muted);
+	max-inline-size: 46ch;
+}
+
+.badr-vitrine__points {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 0;
+}
+
+.badr-vitrine__points li {
+	display: grid;
+	gap: 0.2rem;
+	padding: 0.875rem 0;
+	border-top: 1px solid var(--b-line);
+}
+
+.badr-vitrine__points li:last-child {
+	border-bottom: 1px solid var(--b-line);
+}
+
+.badr-vitrine__points strong {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--badr-accent, var(--b-accent));
+}
+
+.badr-vitrine__points span {
+	font-size: 1rem;
+	line-height: 1.55;
+	color: var(--b-text);
+}
+
+/* ==========================================================================
+   14. TÉMOIGNAGES — expérience éditoriale de citation
+   ========================================================================== */
+
+.badr-quotes {
+	position: relative;
+	--b-accent: var(--b-amber);
+	--b-accent-d: var(--b-amber-d);
+	overflow: hidden;
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+	padding-block: var(--b-sect);
+}
+
+.badr-quotes::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background:
+		radial-gradient(48% 62% at 14% 10%, rgba(250, 134, 3, 0.24), transparent 68%),
+		radial-gradient(44% 56% at 90% 88%, rgba(66, 156, 44, 0.2), transparent 68%);
+	pointer-events: none;
+}
+
+.badr-quotes__inner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+}
+
+.badr-quotes__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1.5rem;
+	margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.badr-quotes__stage {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	min-block-size: clamp(20rem, 34vw, 26rem);
+}
+
+/* La grande guillemet : élément graphique majeur, pas un caractère orange. */
+.badr-quotes__mark {
+	position: absolute;
+	top: clamp(-2.5rem, -3vw, -1.5rem);
+	left: clamp(-0.75rem, -1vw, -0.25rem);
+	z-index: 0;
+	inline-size: clamp(7rem, 16vw, 15rem);
+	block-size: auto;
+	color: var(--b-amber);
+	opacity: 0.24;
+	pointer-events: none;
+}
+
+.badr-quote {
+	grid-area: 1 / 1;
+	display: grid;
+	gap: clamp(1.25rem, 2.5vw, 2rem);
+	align-content: center;
+	position: relative;
+	z-index: 1;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(16px);
+	transition: opacity 620ms var(--b-out), transform 720ms var(--b-out), visibility 0s linear 720ms;
+}
+
+.badr-quote.is-active {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition: opacity 620ms var(--b-out) 120ms, transform 720ms var(--b-out) 120ms, visibility 0s;
+}
+
+@media (min-width: 62rem) {
+	.badr-quote {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+		gap: clamp(2rem, 4vw, 4rem);
+		align-items: center;
+	}
+}
+
+.badr-quote__text {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.5rem, 1rem + 2.1vw, 2.875rem);
+	font-weight: 400;
+	line-height: 1.24;
+	letter-spacing: -0.018em;
+	color: var(--b-on-dark);
+	text-wrap: pretty;
+	max-inline-size: 24ch;
+}
+
+@media (min-width: 62rem) {
+	.badr-quote__text {
+		max-inline-size: none;
+	}
+}
+
+.badr-quote__who {
+	display: grid;
+	gap: 0.35rem;
+	padding-top: clamp(1rem, 2vw, 1.5rem);
+	border-top: 1px solid var(--b-line-dark);
+	align-self: end;
+}
+
+@media (min-width: 62rem) {
+	.badr-quote__who {
+		align-self: center;
+		border-top: 0;
+		border-left: 1px solid var(--b-line-dark);
+		padding-top: 0;
+		padding-left: clamp(1.5rem, 3vw, 2.5rem);
+	}
+}
+
+.badr-quote__name {
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.25rem;
+	font-weight: 600;
+	letter-spacing: -0.018em;
+	color: var(--b-on-dark);
+}
+
+.badr-quote__role {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	line-height: 1.5;
+	color: var(--b-on-dark-muted);
+}
+
+.badr-quote__context {
+	margin-top: 0.5rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--b-gold);
+}
+
+/* Mention honnête : tant qu'un témoignage n'est pas confirmé par l'organisme,
+   il est marqué comme tel plutôt que présenté comme une histoire vérifiée. */
+.badr-quote__flag {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-top: 0.75rem;
+	padding: 0.3rem 0.7rem;
+	border: 1px dashed var(--b-line-dark);
+	border-radius: var(--b-r-pill);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	letter-spacing: 0.06em;
+	color: var(--b-on-dark-muted);
+}
+
+/* --- Contrôles ------------------------------------------------------------ */
+
+.badr-quotes__controls {
+	display: flex;
+	align-items: center;
+	gap: 1.25rem;
+	margin-top: clamp(2rem, 4vw, 3rem);
+	padding-top: clamp(1.25rem, 2.5vw, 2rem);
+	border-top: 1px solid var(--b-line-dark);
+}
+
+.badr-quotes__btn {
+	display: inline-grid;
+	place-items: center;
+	inline-size: 48px;
+	block-size: 48px;
+	border: 1px solid var(--b-line-dark);
+	border-radius: 50%;
+	background: transparent;
+	color: var(--b-on-dark);
+	cursor: pointer;
+	transition: background-color var(--b-base) var(--b-ease), color var(--b-base) var(--b-ease), transform var(--b-fast) var(--b-ease), border-color var(--b-base) var(--b-ease);
+}
+
+.badr-quotes__btn:hover {
+	background: var(--b-gold);
+	border-color: var(--b-gold);
+	color: var(--b-ink);
+	transform: scale(1.06);
+}
+
+.badr-quotes__dots {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-inline-start: auto;
+}
+
+.badr-quotes__dot {
+	inline-size: 2rem;
+	block-size: 3px;
+	padding: 0;
+	border: 0;
+	border-radius: 3px;
+	background: var(--b-line-dark);
+	cursor: pointer;
+	overflow: hidden;
+	position: relative;
+	transition: background-color var(--b-base) var(--b-ease);
+}
+
+.badr-quotes__dot[aria-current="true"] {
+	background: color-mix(in srgb, var(--b-gold) 40%, transparent);
+}
+
+.badr-quotes__dot[aria-current="true"]::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--b-gold);
+	transform-origin: left center;
+	transform: scaleX(0);
+	animation: badr-dot-fill var(--b-quote-dur, 8s) linear forwards;
+}
+
+.badr-quotes.is-paused .badr-quotes__dot[aria-current="true"]::after {
+	animation-play-state: paused;
+}
+
+@keyframes badr-dot-fill {
+	to {
+		transform: scaleX(1);
+	}
+}
+
+.badr-quotes__count {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	letter-spacing: 0.08em;
+	color: var(--b-on-dark-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+/* Aperçu de la citation suivante, sur les grands écrans seulement. */
+.badr-quotes__peek {
+	display: none;
+}
+
+@media (min-width: 80rem) {
+	.badr-quotes__peek {
+		display: block;
+		position: absolute;
+		right: calc(-1 * var(--b-gutter));
+		bottom: 0;
+		inline-size: 15rem;
+		padding-left: 1.5rem;
+		border-left: 1px solid var(--b-line-dark);
+		font-family: var(--wp--preset--font-family--display);
+		font-size: 1.125rem;
+		line-height: 1.4;
+		color: var(--b-on-dark-muted);
+		opacity: 0.55;
+		pointer-events: none;
+	}
+}
+
+/* Ancienne carte de témoignage : conservée pour les pages non recomposées,
+   mais retravaillée pour ne plus ressembler à une boîte générique. */
+.badr-testimonial {
+	position: relative;
+	margin: 0;
+	padding: clamp(1.75rem, 3.5vw, 2.75rem);
+	padding-top: clamp(2.75rem, 5vw, 4rem);
+	background: var(--b-ivory);
+	border: 0;
+	border-radius: var(--b-r-lg);
+	box-shadow: var(--b-shadow-1);
+	border-left: 3px solid var(--b-accent);
+}
+
+.badr-testimonial::before {
+	content: "\201C";
+	position: absolute;
+	top: clamp(0.25rem, 1vw, 0.75rem);
+	left: clamp(1.25rem, 2.5vw, 2rem);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(4rem, 8vw, 6rem);
+	line-height: 1;
+	color: var(--b-accent);
+	opacity: 0.28;
+	pointer-events: none;
+}
+
+.badr-testimonial__context {
+	margin: 0 0 0.75rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-testimonial__quote {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
+	line-height: 1.32;
+	letter-spacing: -0.015em;
+	color: var(--b-ink);
+}
+
+.badr-testimonial__author {
+	display: grid;
+	gap: 0.2rem;
+	margin-top: 1.5rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--b-line-soft);
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.0625rem;
+	font-weight: 600;
+	color: var(--b-ink);
+}
+
+.badr-testimonial__role {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	font-weight: 400;
+	color: var(--b-muted);
+}
+
+/* ==========================================================================
+   15. « ICI, CHACUN TROUVE SA PLACE »
+   ========================================================================== */
+
+.badr-place {
+	position: relative;
+	--b-accent: var(--b-leaf);
+	--b-accent-d: var(--b-leaf-d);
+	overflow: hidden;
+	padding-block: var(--b-sect);
+	background: var(--b-sand);
+}
+
+.badr-place::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background:
+		radial-gradient(50% 60% at 84% 16%, rgba(66, 156, 44, 0.16), transparent 66%),
+		radial-gradient(46% 56% at 8% 88%, rgba(250, 134, 3, 0.14), transparent 66%);
+	pointer-events: none;
+}
+
+.badr-place__inner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+	display: grid;
+	gap: clamp(2rem, 5vw, 4rem);
+	align-items: center;
+}
+
+@media (min-width: 62rem) {
+	.badr-place__inner {
+		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+	}
+}
+
+.badr-place__eyebrow {
+	margin: 0 0 1rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.78125rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--b-leaf-d);
+}
+
+.badr-place__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2.5rem, 1.2rem + 4.6vw, 5rem);
+	font-weight: 400;
+	line-height: 1.02;
+	letter-spacing: -0.025em;
+	color: var(--b-ink);
+	text-wrap: balance;
+}
+
+.badr-place__lead {
+	margin: 1.5rem 0 0;
+	font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+	line-height: 1.66;
+	color: var(--b-muted);
+	max-inline-size: 42ch;
+}
+
+/* Les six portes d'entrée : une navigation réelle à la place de la mosaïque. */
+.badr-place__portes {
+	display: grid;
+	gap: 0;
+	border-top: 1px solid var(--b-line);
+}
+
+@media (min-width: 44rem) {
+	.badr-place__portes {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.badr-porte {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	gap: 0.875rem;
+	align-items: center;
+	padding: clamp(0.875rem, 2vw, 1.25rem) 0;
+	border-bottom: 1px solid var(--b-line);
+	text-decoration: none;
+	color: var(--b-ink);
+	transition: padding-left var(--b-base) var(--b-out), color var(--b-base) var(--b-ease);
+}
+
+@media (min-width: 44rem) {
+	.badr-porte:nth-child(even) {
+		padding-left: clamp(1rem, 2vw, 1.5rem);
+		border-left: 1px solid var(--b-line);
+	}
+}
+
+.badr-porte::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	inline-size: 0;
+	block-size: 2px;
+	background: var(--b-accent);
+	transition: inline-size 420ms var(--b-out), width 420ms var(--b-out);
+}
+
+.badr-porte:hover::before,
+.badr-porte:focus-visible::before {
+	width: 100%;
+}
+
+.badr-porte:hover {
+	padding-left: 0.5rem;
+	color: var(--b-accent);
+}
+
+.badr-porte__num {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.12em;
+	color: var(--b-accent);
+}
+
+.badr-porte__name {
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.375rem);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.24;
+}
+
+.badr-porte__count {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--b-muted);
+	white-space: nowrap;
+}
+
+.badr-porte svg {
+	flex: none;
+	color: var(--b-accent);
+	opacity: 0;
+	transform: translateX(-6px);
+	transition: opacity var(--b-base) var(--b-ease), transform var(--b-base) var(--b-out);
+}
+
+.badr-porte:hover svg,
+.badr-porte:focus-visible svg {
+	opacity: 1;
+	transform: none;
+}
+
+/* ==========================================================================
+   16. PARCOURS — objectifs animés (page « À propos »)
+   ========================================================================== */
+
+.badr-parcours {
+	position: relative;
+	--b-accent: var(--b-amber);
+	--b-accent-d: var(--b-amber-d);
+	overflow: hidden;
+	padding-block: var(--b-sect);
+	background: var(--b-ivory);
+}
+
+.badr-parcours::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background:
+		radial-gradient(40% 42% at 4% 12%, rgba(250, 134, 3, 0.12), transparent 66%),
+		radial-gradient(40% 44% at 96% 42%, rgba(1, 57, 84, 0.1), transparent 66%),
+		radial-gradient(44% 44% at 20% 92%, rgba(66, 156, 44, 0.12), transparent 66%);
+	pointer-events: none;
+}
+
+.badr-parcours__inner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+}
+
+.badr-parcours__track {
+	position: relative;
+	margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* La ligne qui traverse la section et se dessine au défilement. */
+.badr-parcours__line {
+	position: absolute;
+	inset-block: 0;
+	left: 1.375rem;
+	inline-size: 2px;
+	z-index: 0;
+	pointer-events: none;
+}
+
+@media (min-width: 62rem) {
+	.badr-parcours__line {
+		left: 50%;
+		transform: translateX(-1px);
+	}
+}
+
+.badr-parcours__line svg {
+	inline-size: 100%;
+	block-size: 100%;
+	overflow: visible;
+}
+
+.badr-parcours__line path {
+	fill: none;
+	stroke: var(--b-accent);
+	stroke-width: 2;
+	stroke-linecap: round;
+	opacity: 0.42;
+}
+
+.badr-etape {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: 2.75rem minmax(0, 1fr);
+	gap: clamp(1rem, 2.5vw, 1.75rem);
+	padding-block: clamp(1.75rem, 4vw, 3rem);
+}
+
+@media (min-width: 62rem) {
+	.badr-etape {
+		grid-template-columns: minmax(0, 1fr) 5rem minmax(0, 1fr);
+		align-items: center;
+		gap: clamp(1.5rem, 3vw, 2.5rem);
+	}
+
+	.badr-etape__marker {
+		order: 2;
+		justify-self: center;
+	}
+
+	.badr-etape__body {
+		order: 1;
+		text-align: right;
+	}
+
+	.badr-etape__scene {
+		order: 3;
+	}
+
+	.badr-etape:nth-child(even) .badr-etape__body {
+		order: 3;
+		text-align: left;
+	}
+
+	.badr-etape:nth-child(even) .badr-etape__scene {
+		order: 1;
+	}
+
+	.badr-etape__body .badr-etape__lead {
+		margin-inline-start: auto;
+	}
+
+	.badr-etape:nth-child(even) .badr-etape__body .badr-etape__lead {
+		margin-inline-start: 0;
+		margin-inline-end: auto;
+	}
+}
+
+.badr-etape__marker {
+	display: grid;
+	place-items: center;
+	inline-size: 2.75rem;
+	block-size: 2.75rem;
+	border-radius: 50%;
+	background: var(--b-ivory);
+	border: 2px solid color-mix(in srgb, var(--b-accent) 55%, transparent);
+	color: var(--b-accent-d);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	transition: transform 600ms var(--b-spring) var(--b-rv-delay, 0ms), background-color 600ms var(--b-ease), color 600ms var(--b-ease);
+}
+
+.badr-etape.is-visible .badr-etape__marker {
+	background: var(--b-accent);
+	color: #fff;
+	transform: scale(1.1);
+}
+
+.badr-etape__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.375rem, 1.1rem + 1.2vw, 2rem);
+	font-weight: 600;
+	line-height: 1.14;
+	letter-spacing: -0.024em;
+	color: var(--b-ink);
+}
+
+.badr-etape__lead {
+	margin: 0.75rem 0 0;
+	font-size: 1.0625rem;
+	line-height: 1.66;
+	color: var(--b-muted);
+	max-inline-size: 40ch;
+}
+
+/* Icône illustrée qui se trace. */
+.badr-etape__scene {
+	display: grid;
+	place-items: center;
+	padding: clamp(1rem, 2.5vw, 2rem);
+	border-radius: var(--b-r-lg);
+	background: color-mix(in srgb, var(--b-accent) 8%, var(--b-ivory));
+	border: 1px solid color-mix(in srgb, var(--b-accent) 18%, transparent);
+	min-block-size: clamp(9rem, 18vw, 13rem);
+}
+
+.badr-etape__scene svg {
+	inline-size: clamp(5rem, 11vw, 8rem);
+	block-size: auto;
+	color: var(--b-accent);
+}
+
+.badr-etape__scene svg :is(path, circle, line, rect, polyline) {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+@media (max-width: 61.99rem) {
+	.badr-etape__scene {
+		grid-column: 2;
+	}
+}
+
+/* ==========================================================================
+   17. EN-TÊTE DE PAGE
+   ========================================================================== */
+
+.badr-pagehead {
+	position: relative;
+	overflow: hidden;
+	padding-block: clamp(7rem, 16vh, 12rem) clamp(3.5rem, 8vw, 6rem);
+	margin-top: calc(-1 * (clamp(58px, 6vw, 76px) + 1.75rem));
+	background: var(--b-ivory);
+	isolation: isolate;
+}
+
+.badr-pagehead::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	background:
+		radial-gradient(58% 62% at 88% 4%, color-mix(in srgb, var(--b-accent) 16%, transparent), transparent 66%),
+		radial-gradient(46% 50% at 4% 92%, color-mix(in srgb, var(--b-accent) 10%, transparent), transparent 66%),
+		linear-gradient(180deg, var(--b-ivory), var(--b-ivory-2));
+	pointer-events: none;
+}
+
+.badr-pagehead__inner {
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+}
+
+.badr-pagehead__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2.25rem, 1.2rem + 3.8vw, 4.25rem);
+	font-weight: 600;
+	line-height: 1.04;
+	letter-spacing: -0.03em;
+	color: var(--b-ink);
+	max-inline-size: 18ch;
+	text-wrap: balance;
+}
+
+.badr-pagehead__lead {
+	margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+	font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3125rem);
+	line-height: 1.62;
+	color: var(--b-muted);
+	max-inline-size: 48ch;
+}
+
+/* En-tête cinématographique avec photo. */
+.badr-pagehead--cine {
+	padding-block: clamp(8rem, 20vh, 14rem) clamp(4rem, 9vw, 7rem);
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+}
+
+.badr-pagehead--cine::before {
+	background: none;
+}
+
+.badr-pagehead__media {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	overflow: hidden;
+}
+
+.badr-pagehead__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transform: scale(1.06);
+	animation: badr-kenburns 22s ease-in-out infinite alternate;
+}
+
+@keyframes badr-kenburns {
+	from {
+		transform: scale(1.06) translate3d(0, 0, 0);
+	}
+	to {
+		transform: scale(1.14) translate3d(-1.5%, -1.5%, 0);
+	}
+}
+
+.badr-pagehead__media::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(16, 48, 58, 0.72) 0%, rgba(16, 48, 58, 0.56) 42%, rgba(16, 48, 58, 0.9) 100%);
+}
+
+.badr-pagehead--cine .badr-pagehead__title {
+	color: var(--b-on-dark);
+	max-inline-size: 20ch;
+}
+
+.badr-pagehead--cine .badr-pagehead__lead {
+	color: var(--b-on-dark-muted);
+}
+
+.badr-pagehead--cine .badr-eyebrow {
+	color: var(--b-gold);
+}
+
+/* Ancien modificateur, neutralisé pour ne pas produire deux styles concurrents. */
+.badr-pagehead--media {
+	background: var(--b-ivory);
+}
+
+/* ==========================================================================
+   18. BLOCS ÉDITORIAUX RÉUTILISABLES
+   ========================================================================== */
+
+/* --- Duo image + texte ---------------------------------------------------- */
+
+.badr-duo {
+	display: grid;
+	gap: clamp(1.75rem, 4vw, 3.5rem);
+	align-items: center;
+}
+
+@media (min-width: 54rem) {
+	.badr-duo {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+
+	.badr-duo--wide-media {
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+	}
+
+	.badr-duo--flip > :first-child {
+		order: 2;
+	}
+}
+
+.badr-duo__text > * + * {
+	margin-top: 1.25rem;
+}
+
+.badr-duo__text p {
+	font-size: 1.0625rem;
+	line-height: 1.72;
+	color: var(--b-muted);
+	max-inline-size: 46ch;
+	margin-block: 0;
+}
+
+.badr-section--ink .badr-duo__text p,
+.badr-band-dark .badr-duo__text p {
+	color: var(--b-on-dark-muted);
+}
+
+/* --- Mission : deux colonnes de texte, aucune image décorative ------------ */
+
+.badr-mission {
+	display: grid;
+	gap: clamp(1.5rem, 3.5vw, 3.5rem);
+	align-items: start;
+}
+
+@media (min-width: 58rem) {
+	.badr-mission {
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+	}
+}
+
+.badr-mission__text > * + * {
+	margin-top: 1.25rem;
+}
+
+.badr-mission__text p {
+	margin: 0;
+	font-size: 1.0625rem;
+	line-height: 1.72;
+	color: var(--b-muted);
+	max-inline-size: 48ch;
+}
+
+/* --- Média ---------------------------------------------------------------- */
+
+.badr-media,
+.badr-figure {
+	position: relative;
+	margin: 0;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	background: var(--b-sand);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-media img,
+.badr-figure img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 1100ms var(--b-out);
+}
+
+.badr-figure:hover img {
+	transform: scale(1.04);
+}
+
+.badr-media--wide {
+	aspect-ratio: 16 / 9;
+}
+
+.badr-figure--portrait {
+	aspect-ratio: 4 / 5;
+}
+
+.badr-figure--square {
+	aspect-ratio: 1;
+}
+
+.badr-figure--landscape {
+	aspect-ratio: 3 / 2;
+}
+
+/* Champ de couleur derrière l'image, décalé : donne de la dimension. */
+.badr-figure--offset::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--b-accent);
+}
+
+.badr-figure-wrap {
+	position: relative;
+}
+
+.badr-figure-wrap::before {
+	content: "";
+	position: absolute;
+	inset: 12% -6% -8% 8%;
+	z-index: 0;
+	border-radius: var(--b-r-lg);
+	background: color-mix(in srgb, var(--b-accent) 18%, transparent);
+	pointer-events: none;
+}
+
+.badr-figure-wrap > * {
+	position: relative;
+	z-index: 1;
+}
+
+.badr-media__tag,
+.badr-figure__tag {
+	position: absolute;
+	left: 1rem;
+	bottom: 1rem;
+	z-index: 2;
+	padding: 0.5rem 1rem;
+	border-radius: var(--b-r-pill);
+	background: color-mix(in srgb, var(--b-ivory) 92%, transparent);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--b-ink);
+}
+
+/* --- Citation détachée ---------------------------------------------------- */
+
+.badr-pull {
+	position: relative;
+	margin: 0;
+	padding: clamp(1.5rem, 3vw, 2.5rem) 0 0 clamp(1.5rem, 3vw, 2.5rem);
+	border: 0;
+	border-left: 2px solid var(--b-accent);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.375rem, 1rem + 1.5vw, 2.125rem);
+	font-weight: 400;
+	line-height: 1.28;
+	letter-spacing: -0.018em;
+	color: var(--b-ink);
+	quotes: none;
+}
+
+.badr-section--ink .badr-pull,
+.badr-band-dark .badr-pull {
+	color: var(--b-on-dark);
+	border-left-color: var(--b-gold);
+}
+
+/* --- Grilles génériques --------------------------------------------------- */
+
+.badr-grid {
+	display: grid;
+	gap: clamp(1.25rem, 2.5vw, 2rem);
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+.badr-grid--wide {
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+/* --- Carte, retravaillée pour ne plus être un rectangle répétitif --------- */
+
+.badr-card {
+	position: relative;
+	display: grid;
+	gap: 0.625rem;
+	align-content: start;
+	padding: clamp(1.5rem, 3vw, 2.25rem);
+	border-radius: var(--b-r-md);
+	background: var(--b-ivory);
+	border: 1px solid var(--b-line-soft);
+	overflow: hidden;
+	transition: transform var(--b-base) var(--b-out), box-shadow var(--b-base) var(--b-ease), border-color var(--b-base) var(--b-ease);
+}
+
+.badr-card::before {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	top: 0;
+	block-size: 3px;
+	background: var(--b-accent);
+	transform: scaleX(0);
+	transform-origin: left center;
+	transition: transform 480ms var(--b-out);
+}
+
+.badr-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--b-shadow-2);
+	border-color: color-mix(in srgb, var(--b-accent) 30%, transparent);
+}
+
+.badr-card:hover::before {
+	transform: scaleX(1);
+}
+
+.badr-card--cream {
+	background: var(--b-sand);
+	border-color: transparent;
+}
+
+.badr-card__eyebrow {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-card__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.3125rem;
+	font-weight: 600;
+	line-height: 1.22;
+	letter-spacing: -0.02em;
+	color: var(--b-ink);
+}
+
+.badr-card p {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.62;
+	color: var(--b-muted);
+}
+
+/* --- Valeurs / engagements ------------------------------------------------ */
+
+.badr-values {
+	display: grid;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+@media (min-width: 48rem) {
+	.badr-values {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.badr-values li {
+	position: relative;
+	padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.25rem) 0;
+	border-top: 1px solid var(--b-line);
+}
+
+@media (min-width: 48rem) {
+	.badr-values li:nth-child(even) {
+		padding-left: clamp(1.5rem, 3vw, 2.5rem);
+		border-left: 1px solid var(--b-line);
+	}
+}
+
+.badr-section--ink .badr-values li,
+.badr-band-dark .badr-values li {
+	border-color: var(--b-line-dark);
+}
+
+.badr-values li::before {
+	content: "";
+	position: absolute;
+	top: -1px;
+	left: 0;
+	inline-size: 3rem;
+	block-size: 2px;
+	background: var(--badr-accent, var(--b-accent));
+	transform: scaleX(0);
+	transform-origin: left center;
+	transition: transform 620ms var(--b-out) calc(var(--b-i, 0) * 110ms);
+}
+
+.badr-values.is-visible li::before,
+.is-visible .badr-values li::before {
+	transform: scaleX(1);
+}
+
+.badr-values h3 {
+	margin: 0 0 0.5rem;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.3125rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+	color: var(--b-ink);
+}
+
+.badr-values p {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.66;
+	color: var(--b-muted);
+	max-inline-size: 42ch;
+}
+
+/* --- Faits chiffrés (pages secondaires) ----------------------------------- */
+
+.badr-facts {
+	display: grid;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--b-line);
+}
+
+@media (min-width: 44rem) {
+	.badr-facts {
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+	}
+}
+
+.badr-fact {
+	padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1rem, 2vw, 1.75rem) clamp(1.25rem, 2.5vw, 2rem) 0;
+	border-bottom: 1px solid var(--b-line);
+}
+
+@media (min-width: 44rem) {
+	.badr-fact + .badr-fact {
+		padding-left: clamp(1rem, 2vw, 1.75rem);
+		border-left: 1px solid var(--b-line);
+	}
+}
+
+.badr-fact strong,
+.badr-fact__value {
+	display: block;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.03em;
+	color: var(--b-ink);
+}
+
+.badr-fact__label {
+	display: block;
+	margin-top: 0.5rem;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1rem;
+	font-weight: 500;
+	color: var(--b-ink);
+}
+
+.badr-fact__note {
+	display: block;
+	margin-top: 0.35rem;
+	font-size: 0.875rem;
+	line-height: 1.5;
+	color: var(--b-muted);
+}
+
+/* --- Liste de précisions -------------------------------------------------- */
+
+.badr-details {
+	display: grid;
+	gap: 0;
+	margin: 1.75rem 0 0;
+}
+
+@media (min-width: 34rem) {
+	.badr-details {
+		grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
+	}
+}
+
+.badr-details dt {
+	padding: 0.875rem 1rem 0.25rem 0;
+	border-top: 1px solid var(--b-line);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-details dd {
+	margin: 0;
+	padding: 0.25rem 0 0.875rem;
+	font-size: 1.0625rem;
+	line-height: 1.55;
+	color: var(--b-text);
+}
+
+@media (min-width: 34rem) {
+	.badr-details dd {
+		padding-top: 0.875rem;
+		border-top: 1px solid var(--b-line);
+	}
+}
+
+.badr-section--ink .badr-details dt,
+.badr-band-dark .badr-details dt {
+	border-color: var(--b-line-dark);
+	color: var(--b-gold);
+}
+
+.badr-section--ink .badr-details dd,
+.badr-band-dark .badr-details dd {
+	border-color: var(--b-line-dark);
+	color: var(--b-on-dark);
+}
+
+/* --- Activités ------------------------------------------------------------ */
+
+.badr-activities {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 1.25rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.badr-activities li {
+	padding: 0.45rem 0.9rem;
+	border-radius: var(--b-r-pill);
+	background: color-mix(in srgb, var(--b-accent) 12%, transparent);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: var(--b-ink);
+}
+
+.badr-activities__label {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+/* --- Fiches espaces / projets --------------------------------------------- */
+
+.badr-espaces {
+	display: grid;
+	gap: clamp(1rem, 2vw, 1.5rem);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+}
+
+.badr-espace {
+	position: relative;
+	padding: clamp(1.25rem, 2.5vw, 1.75rem);
+	border-radius: var(--b-r-md);
+	background: var(--b-ivory);
+	border: 1px solid var(--b-line-soft);
+	transition: transform var(--b-base) var(--b-out), box-shadow var(--b-base) var(--b-ease);
+}
+
+.badr-espace:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--b-shadow-1);
+}
+
+.badr-espace__body {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 1rem;
+	align-items: start;
+}
+
+.badr-espace__mono {
+	display: grid;
+	place-items: center;
+	inline-size: 2.75rem;
+	block-size: 2.75rem;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--badr-accent, var(--b-accent)) 14%, transparent);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--b-ink);
+}
+
+.badr-espace--parents { --badr-accent: var(--wp--custom--espace--parents); }
+.badr-espace--papas { --badr-accent: var(--wp--custom--espace--papas); }
+.badr-espace--femmes { --badr-accent: var(--wp--custom--espace--femmes); }
+.badr-espace--familles { --badr-accent: var(--wp--custom--espace--familles); }
+.badr-espace--filles { --badr-accent: var(--wp--custom--espace--filles); }
+.badr-espace--aines { --badr-accent: var(--wp--custom--espace--aines); }
+.badr-espace--petite-enfance { --badr-accent: var(--wp--custom--espace--petite-enfance); }
+.badr-espace--enfants { --badr-accent: var(--wp--custom--espace--enfants); }
+.badr-espace--jeunes { --badr-accent: var(--wp--custom--espace--jeunes); }
+
+.badr-espace__name {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.1875rem;
+	font-weight: 600;
+	letter-spacing: -0.018em;
+	line-height: 1.24;
+	color: var(--b-ink);
+}
+
+.badr-espace__audience {
+	display: block;
+	margin-top: 0.25rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--badr-accent, var(--b-accent));
+}
+
+.badr-espace__desc {
+	margin: 0.75rem 0 0;
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	color: var(--b-muted);
+}
+
+.badr-espace-detail {
+	display: grid;
+	gap: 0.75rem;
+	padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+	border-top: 1px solid var(--b-line);
+}
+
+.badr-espace-detail__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.375rem, 1.1rem + 1vw, 1.875rem);
+	font-weight: 600;
+	letter-spacing: -0.022em;
+	color: var(--b-ink);
+}
+
+.badr-espace-detail__goal {
+	margin: 0;
+	font-size: 1.0625rem;
+	line-height: 1.66;
+	color: var(--b-muted);
+	max-inline-size: 52ch;
+}
+
+.badr-project {
+	position: relative;
+	display: grid;
+	gap: 0.75rem;
+	padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+	border-top: 1px solid var(--b-line);
+}
+
+.badr-project__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.375rem, 1.1rem + 1vw, 1.875rem);
+	font-weight: 600;
+	letter-spacing: -0.022em;
+	color: var(--b-ink);
+}
+
+.badr-project__goal {
+	margin: 0;
+	font-size: 1.0625rem;
+	line-height: 1.66;
+	color: var(--b-muted);
+	max-inline-size: 52ch;
+}
+
+.badr-project__dl {
+	display: grid;
+	gap: 0.25rem 1rem;
+	margin: 0.5rem 0 0;
+	font-size: 0.9375rem;
+}
+
+@media (min-width: 34rem) {
+	.badr-project__dl {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+}
+
+.badr-project__dl dt {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+	padding-top: 0.2rem;
+}
+
+.badr-project__dl dd {
+	margin: 0;
+	color: var(--b-text);
+}
+
+/* --- Héros de sous-page --------------------------------------------------- */
+
+.badr-hero__panel {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	padding: clamp(1.75rem, 4vw, 3rem);
+	background: var(--b-sand);
+}
+
+.badr-hero__lead {
+	margin: 0;
+	font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+	line-height: 1.66;
+	color: var(--b-muted);
+	max-inline-size: 48ch;
+}
+
+/* --- Notices -------------------------------------------------------------- */
+
+.badr-notice {
+	display: grid;
+	gap: 0.4rem;
+	padding: clamp(1rem, 2vw, 1.5rem);
+	border-radius: var(--b-r-md);
+	border-left: 3px solid var(--b-accent);
+	background: color-mix(in srgb, var(--b-accent) 8%, var(--b-ivory));
+}
+
+.badr-notice--info {
+	--b-accent: var(--b-azure);
+	--b-accent-d: var(--b-azure-d);
+}
+
+.badr-notice--warn {
+	--b-accent: var(--b-amber);
+	--b-accent-d: var(--b-amber-d);
+}
+
+.badr-notice--alert {
+	--b-accent: var(--b-flame);
+	--b-accent-d: var(--b-flame-d);
+}
+
+.badr-notice__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.0625rem;
+	font-weight: 700;
+	color: var(--b-ink);
+}
+
+.badr-notice__body {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--b-muted);
+}
+
+.badr-todo {
+	padding: 1rem 1.25rem;
+	border: 1px dashed var(--b-line);
+	border-radius: var(--b-r-md);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.875rem;
+	color: var(--b-muted);
+}
+
+.badr-empty {
+	display: grid;
+	gap: 0.75rem;
+	place-items: center;
+	padding: clamp(2rem, 5vw, 4rem);
+	text-align: center;
+	border: 1px dashed var(--b-line);
+	border-radius: var(--b-r-lg);
+	color: var(--b-muted);
+}
+
+/* --- Filigrane : neutralisé ------------------------------------------------
+   L'ancien « data-mark » posait un chiffre géant presque invisible qui
+   décollait le titre de son contenu. On garde le conteneur, on retire le
+   chiffre. */
+
+.badr-watermark {
+	position: relative;
+}
+
+.badr-watermark::before {
+	content: none;
+}
+
+/* ==========================================================================
+   19. BANQUE ALIMENTAIRE
+   ========================================================================== */
+
+.badr-bank__hero {
+	position: relative;
+	--b-accent: var(--b-leaf);
+	--b-accent-d: var(--b-leaf-d);
+	overflow: hidden;
+	padding-block: var(--b-sect);
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+}
+
+.badr-bank__hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background:
+		radial-gradient(52% 60% at 10% 8%, rgba(66, 156, 44, 0.28), transparent 66%),
+		radial-gradient(48% 56% at 92% 90%, rgba(250, 134, 3, 0.2), transparent 66%);
+	pointer-events: none;
+}
+
+.badr-bank__hero-inner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+	display: grid;
+	gap: clamp(2rem, 4vw, 3.5rem);
+	align-items: center;
+}
+
+@media (min-width: 58rem) {
+	.badr-bank__hero-inner {
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+	}
+}
+
+.badr-bank__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2.25rem, 1.3rem + 3.4vw, 4rem);
+	font-weight: 600;
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+	color: var(--b-on-dark);
+	max-inline-size: 16ch;
+}
+
+.badr-bank__lead {
+	margin: 1.25rem 0 0;
+	font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+	line-height: 1.66;
+	color: var(--b-on-dark-muted);
+	max-inline-size: 46ch;
+}
+
+.badr-bank__media {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	aspect-ratio: 4 / 3;
+	box-shadow: var(--b-shadow-3);
+}
+
+.badr-bank__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+}
+
+.badr-bank__steps {
+	counter-reset: badr-step;
+	display: grid;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+@media (min-width: 52rem) {
+	.badr-bank__steps {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.badr-bank__steps li {
+	counter-increment: badr-step;
+	position: relative;
+	padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.25rem) 0;
+	border-top: 1px solid var(--b-line);
+}
+
+@media (min-width: 52rem) {
+	.badr-bank__steps li + li {
+		padding-left: clamp(1.25rem, 2.5vw, 2rem);
+		border-left: 1px solid var(--b-line);
+	}
+}
+
+.badr-bank__steps li::before {
+	content: counter(badr-step, decimal-leading-zero);
+	display: block;
+	margin-bottom: 0.75rem;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+	line-height: 1;
+	color: color-mix(in srgb, var(--b-accent) 45%, transparent);
+}
+
+.badr-bank__ways {
+	display: grid;
+	gap: clamp(1rem, 2vw, 1.5rem);
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.badr-bank__way {
+	display: grid;
+	gap: 0.5rem;
+	align-content: start;
+	padding: clamp(1.5rem, 3vw, 2rem);
+	border-radius: var(--b-r-md);
+	background: var(--b-sand);
+}
+
+.badr-bank__way h3 {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.25rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: var(--b-ink);
+}
+
+.badr-bank__way p {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.62;
+	color: var(--b-muted);
+}
+
+/* ==========================================================================
+   20. CLÔTURE
+   ========================================================================== */
+
+.badr-closing {
+	position: relative;
+	--b-accent: var(--b-gold);
+	overflow: hidden;
+	padding-block: clamp(5rem, 11vw, 9rem);
+	padding-inline: var(--b-gutter);
+	text-align: center;
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+}
+
+.badr-closing::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background:
+		radial-gradient(44% 60% at 50% 0%, rgba(250, 134, 3, 0.26), transparent 66%),
+		radial-gradient(50% 60% at 12% 100%, rgba(66, 156, 44, 0.2), transparent 66%),
+		radial-gradient(50% 60% at 88% 100%, rgba(227, 51, 19, 0.18), transparent 66%);
+	pointer-events: none;
+}
+
+.badr-closing > * {
+	position: relative;
+	z-index: 1;
+	margin-inline: auto;
+}
+
+.badr-closing__eyebrow {
+	margin: 0 auto 1.25rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.78125rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--b-gold);
+}
+
+.badr-closing__title {
+	margin: 0 auto;
+	max-inline-size: 20ch;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(2.25rem, 1.2rem + 4vw, 4.5rem);
+	font-weight: 400;
+	line-height: 1.04;
+	letter-spacing: -0.024em;
+	color: var(--b-on-dark);
+	text-wrap: balance;
+}
+
+.badr-closing__lead {
+	margin: clamp(1.25rem, 2.5vw, 1.75rem) auto 0;
+	max-inline-size: 48ch;
+	font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+	line-height: 1.66;
+	color: var(--b-on-dark-muted);
+}
+
+.badr-closing__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.875rem;
+	margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+/* ==========================================================================
+   21. FORMULAIRES
+   ========================================================================== */
+
+.badr-form {
+	display: grid;
+	gap: 1.25rem;
+	max-inline-size: 40rem;
+}
+
+.badr-field {
+	display: grid;
+	gap: 0.4rem;
+}
+
+.badr-field__label {
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: var(--b-ink);
+}
+
+.badr-field__required {
+	color: var(--b-flame-d);
+}
+
+.badr-field__hint {
+	font-size: 0.875rem;
+	color: var(--b-muted);
+}
+
+.badr-field :is(input, textarea, select) {
+	min-height: 48px;
+	padding: 0.75rem 1rem;
+	border: 1.5px solid var(--b-line);
+	border-radius: var(--b-r-sm);
+	background: var(--b-ivory);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	color: var(--b-ink);
+	transition: border-color var(--b-base) var(--b-ease), box-shadow var(--b-base) var(--b-ease);
+}
+
+.badr-field :is(input, textarea, select):focus {
+	border-color: var(--b-accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--b-accent) 22%, transparent);
+	outline: none;
+}
+
+.badr-contact-block {
+	display: grid;
+	gap: 0.5rem;
+	padding: clamp(1.5rem, 3vw, 2rem);
+	border-radius: var(--b-r-md);
+	background: var(--b-sand);
+}
+
+/* ==========================================================================
+   22. PIED DE PAGE
+   ========================================================================== */
+
+.badr-footer {
+	position: relative;
+	overflow: hidden;
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+	padding-block: clamp(3.5rem, 8vw, 6rem) 0;
+}
+
+.badr-footer::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background: radial-gradient(60% 70% at 88% 0%, rgba(1, 57, 84, 0.6), transparent 68%);
+	pointer-events: none;
+}
+
+.badr-footer__inner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: var(--b-wide);
+	margin-inline: auto;
+	padding-inline: var(--b-gutter);
+}
+
+.badr-footer__grid {
+	display: grid;
+	gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+@media (min-width: 52rem) {
+	.badr-footer__grid {
+		grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
+	}
+}
+
+.badr-footer__identity {
+	display: grid;
+	gap: 1rem;
+	align-content: start;
+}
+
+.badr-footer__logo img {
+	inline-size: 84px;
+	block-size: auto;
+	border-radius: var(--b-r-sm);
+}
+
+.badr-footer__name {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.25rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: var(--b-on-dark);
+}
+
+.badr-footer__desc {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.62;
+	color: var(--b-on-dark-muted);
+	max-inline-size: 38ch;
+}
+
+.badr-footer__heading {
+	margin: 0 0 1rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--b-gold);
+}
+
+.badr-footer__list {
+	display: grid;
+	gap: 0.6rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.badr-footer__list a,
+.badr-footer__contact a,
+.badr-footer__address a {
+	color: var(--b-on-dark-muted);
+	text-decoration: none;
+	transition: color var(--b-base) var(--b-ease);
+}
+
+.badr-footer__list a:hover,
+.badr-footer__contact a:hover,
+.badr-footer__address a:hover {
+	color: var(--b-gold);
+}
+
+.badr-footer__address,
+.badr-footer__contact {
+	font-style: normal;
+	display: grid;
+	gap: 0.5rem;
+	margin: 0;
+	color: var(--b-on-dark-muted);
+	line-height: 1.6;
+}
+
+.badr-footer__news {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.badr-footer__social {
+	display: flex;
+	gap: 0.6rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.badr-footer__social a {
+	display: grid;
+	place-items: center;
+	inline-size: 44px;
+	block-size: 44px;
+	border: 1px solid var(--b-line-dark);
+	border-radius: 50%;
+	color: var(--b-on-dark);
+	transition: background-color var(--b-base) var(--b-ease), color var(--b-base) var(--b-ease), transform var(--b-fast) var(--b-ease);
+}
+
+.badr-footer__social a:hover {
+	background: var(--b-gold);
+	color: var(--b-ink);
+	transform: translateY(-2px);
+}
+
+.badr-footer__legal {
+	margin-top: clamp(2.5rem, 5vw, 4rem);
+	padding-block: 1.5rem;
+	border-top: 1px solid var(--b-line-dark);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem 1.5rem;
+	align-items: center;
+	justify-content: space-between;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.04em;
+	color: var(--b-on-dark-muted);
+}
+
+/* ==========================================================================
+   23. BLOCS WORDPRESS — accords avec le système
+   ========================================================================== */
+
+.wp-block-group.alignfull {
+	margin-block: 0;
+}
+
+.badr-section > .wp-block-columns,
+.badr-section > .wp-block-group {
+	margin-block: 0;
+}
+
+:where(.entry-content, .wp-block-post-content) > * + * {
+	margin-block-start: 1.5rem;
+}
+
+.wp-block-post-content :is(h2, h3) {
+	margin-block-start: 2.5rem;
+}
+
+.wp-block-image img {
+	border-radius: var(--b-r-md);
+}
+
+.wp-block-separator {
+	border: 0;
+	block-size: 1px;
+	background: var(--b-line);
+	opacity: 1;
+}
+
+/* ==========================================================================
+   24. RÉPERTOIRE DES SERVICES ET ACTIVITÉS
+   --------------------------------------------------------------------------
+   La partie la plus utile du site : on doit pouvoir trouver une activité,
+   comprendre à qui elle s'adresse et savoir comment s'y inscrire, sans lire
+   un seul paragraphe d'introduction.
+   ========================================================================== */
+
+/* --- Héros de service : utile, pas monumental ----------------------------- */
+
+.badr-svc-hero {
+	position: relative;
+	--b-accent: var(--b-azure);
+	--b-accent-d: var(--b-azure-d);
+	overflow: hidden;
+	padding-block: clamp(6.5rem, 15vh, 10rem) clamp(2.5rem, 5vw, 4rem);
+	margin-top: calc(-1 * (clamp(58px, 6vw, 76px) + 1.75rem));
+	background: var(--b-ivory);
+	isolation: isolate;
+}
+
+.badr-svc-hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(52% 60% at 88% 0%, rgba(1, 57, 84, 0.13), transparent 66%),
+		radial-gradient(46% 54% at 4% 100%, rgba(250, 134, 3, 0.12), transparent 66%),
+		linear-gradient(180deg, var(--b-ivory), var(--b-ivory-2));
+	pointer-events: none;
+}
+
+.badr-svc-hero__inner {
+	display: grid;
+	gap: clamp(1.75rem, 4vw, 3.5rem);
+	align-items: end;
+}
+
+@media (min-width: 62rem) {
+	.badr-svc-hero__inner {
+		grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+	}
+}
+
+.badr-svc-hero__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2.25rem, 1.2rem + 4vw, 4.25rem);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.032em;
+	color: var(--b-ink);
+	max-inline-size: 16ch;
+	text-wrap: balance;
+}
+
+.badr-svc-hero__lead {
+	margin: clamp(1rem, 2vw, 1.5rem) 0 0;
+	font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+	line-height: 1.62;
+	color: var(--b-muted);
+	max-inline-size: 50ch;
+}
+
+.badr-svc-hero__stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0;
+	margin: 0;
+	border-top: 1px solid var(--b-line);
+}
+
+.badr-svc-hero__stats > div {
+	flex: 1 1 6rem;
+	padding: 1rem 1.25rem 1rem 0;
+	border-bottom: 1px solid var(--b-line);
+}
+
+.badr-svc-hero__stats > div + div {
+	padding-left: 1.25rem;
+	border-left: 1px solid var(--b-line);
+}
+
+.badr-svc-hero__stats dt {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--b-muted);
+}
+
+.badr-svc-hero__stats dd {
+	margin: 0.35rem 0 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: -0.035em;
+	color: var(--b-accent-d);
+}
+
+/* --- Chercheur d'activités ------------------------------------------------ */
+
+.badr-finder {
+	position: relative;
+	padding-block: clamp(2.5rem, 5vw, 4rem);
+	background: var(--b-sand);
+}
+
+.badr-finder__head {
+	margin-bottom: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+/* Les quatre familles : navigation principale, en grands sélecteurs. */
+.badr-familles {
+	display: grid;
+	gap: clamp(0.75rem, 1.6vw, 1rem);
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+	margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* Même composant, qu'il serve de filtre (bouton) ou de lien vers le répertoire. */
+.badr-famille {
+	position: relative;
+	display: grid;
+	gap: 0.4rem;
+	align-content: start;
+	color: inherit;
+	text-decoration: none;
+	font: inherit;
+	padding: clamp(1.125rem, 2.4vw, 1.625rem);
+	padding-right: 3.25rem;
+	text-align: left;
+	background: var(--b-ivory);
+	border: 1.5px solid var(--b-line-soft);
+	border-radius: var(--b-r-md);
+	cursor: pointer;
+	overflow: hidden;
+	transition:
+		transform var(--b-base) var(--b-out),
+		border-color var(--b-base) var(--b-ease),
+		box-shadow var(--b-base) var(--b-ease),
+		background-color var(--b-base) var(--b-ease);
+}
+
+.badr-famille::before {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	block-size: 4px;
+	background: var(--b-accent);
+	transform: scaleX(0);
+	transform-origin: left center;
+	transition: transform 460ms var(--b-out);
+}
+
+.badr-famille:hover {
+	transform: translateY(-3px);
+	border-color: color-mix(in srgb, var(--b-accent) 45%, transparent);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-famille.is-active {
+	border-color: var(--b-accent);
+	background: color-mix(in srgb, var(--b-accent) 7%, var(--b-ivory));
+}
+
+.badr-famille.is-active::before,
+.badr-famille:hover::before {
+	transform: scaleX(1);
+}
+
+.badr-famille__icon-wrap {
+	display: block;
+	inline-size: 2.5rem;
+	block-size: 2.5rem;
+	color: var(--b-accent);
+	margin-bottom: 0.35rem;
+}
+
+.badr-famille__icon {
+	inline-size: 100%;
+	block-size: 100%;
+}
+
+.badr-famille__icon :is(path, circle, rect) {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.7;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.badr-famille__name {
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.1875rem;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	color: var(--b-ink);
+}
+
+.badr-famille__desc {
+	font-size: 0.9375rem;
+	line-height: 1.5;
+	color: var(--b-muted);
+}
+
+.badr-famille__count {
+	position: absolute;
+	top: clamp(1.125rem, 2.4vw, 1.625rem);
+	right: clamp(1rem, 2vw, 1.25rem);
+	min-inline-size: 2rem;
+	padding: 0.2rem 0.5rem;
+	border-radius: var(--b-r-pill);
+	background: color-mix(in srgb, var(--b-accent) 16%, transparent);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	text-align: center;
+	color: var(--b-ink);
+}
+
+/* Barre de filtres. */
+.badr-finder__bar {
+	display: grid;
+	gap: 0.75rem;
+	align-items: end;
+	padding: clamp(1rem, 2vw, 1.25rem);
+	background: var(--b-ivory);
+	border: 1px solid var(--b-line-soft);
+	border-radius: var(--b-r-md);
+}
+
+@media (min-width: 56rem) {
+	.badr-finder__bar {
+		grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+		gap: 1rem;
+	}
+}
+
+.badr-finder__search {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.badr-finder__search svg {
+	position: absolute;
+	left: 0.875rem;
+	color: var(--b-muted);
+	pointer-events: none;
+}
+
+.badr-finder__search input {
+	inline-size: 100%;
+	min-height: 48px;
+	padding: 0.75rem 1rem 0.75rem 2.75rem;
+	border: 1.5px solid var(--b-line);
+	border-radius: var(--b-r-pill);
+	background: var(--b-ivory);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	color: var(--b-ink);
+	transition: border-color var(--b-base) var(--b-ease), box-shadow var(--b-base) var(--b-ease);
+}
+
+.badr-finder__search input:focus {
+	outline: none;
+	border-color: var(--b-azure);
+	box-shadow: 0 0 0 3px rgba(1, 57, 84, 0.18);
+}
+
+.badr-finder__field {
+	display: grid;
+	gap: 0.3rem;
+}
+
+.badr-finder__field label {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--b-muted);
+}
+
+.badr-finder__field select {
+	min-height: 48px;
+	padding: 0.65rem 0.9rem;
+	border: 1.5px solid var(--b-line);
+	border-radius: var(--b-r-sm);
+	background: var(--b-ivory);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	color: var(--b-ink);
+}
+
+.badr-finder__reset {
+	min-height: 48px;
+	padding: 0.65rem 1.25rem;
+	border: 1.5px solid var(--b-line);
+	border-radius: var(--b-r-pill);
+	background: transparent;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: var(--b-muted);
+	cursor: pointer;
+	transition: color var(--b-base) var(--b-ease), border-color var(--b-base) var(--b-ease);
+}
+
+.badr-finder__reset:hover {
+	color: var(--b-ink);
+	border-color: var(--b-ink);
+}
+
+.badr-finder__count {
+	margin: 1rem 0 0;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--b-muted);
+}
+
+.badr-finder__none {
+	margin: 2rem 0 0;
+	padding: clamp(1.5rem, 3vw, 2.5rem);
+	text-align: center;
+	border: 1px dashed var(--b-line);
+	border-radius: var(--b-r-md);
+	color: var(--b-muted);
+}
+
+.badr-finder__none .badr-link {
+	font-size: inherit;
+}
+
+/* --- Une activité --------------------------------------------------------- */
+
+.badr-activites__list {
+	display: grid;
+	gap: clamp(0.875rem, 1.8vw, 1.25rem);
+}
+
+.badr-activite {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: clamp(0.875rem, 2vw, 1.5rem);
+	padding: clamp(1rem, 2.2vw, 1.5rem);
+	background: var(--b-ivory);
+	border: 1px solid var(--b-line-soft);
+	border-radius: var(--b-r-md);
+	border-left: 4px solid var(--b-accent);
+	transition:
+		transform var(--b-base) var(--b-out),
+		box-shadow var(--b-base) var(--b-ease),
+		border-color var(--b-base) var(--b-ease);
+}
+
+@media (min-width: 48rem) {
+	.badr-activite {
+		grid-template-columns: 9rem minmax(0, 1fr) minmax(0, 13rem);
+		align-items: center;
+	}
+}
+
+.badr-activite:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--b-shadow-2);
+}
+
+/* Sortie de filtrage : l'activité s'efface, elle ne disparaît pas d'un coup. */
+.badr-activite.is-filtered {
+	display: none;
+}
+
+.js .badr-activite {
+	transition:
+		transform var(--b-base) var(--b-out),
+		box-shadow var(--b-base) var(--b-ease),
+		opacity 320ms var(--b-ease);
+}
+
+.badr-activite__media {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--b-r-sm);
+	aspect-ratio: 4 / 3;
+	background: color-mix(in srgb, var(--b-accent) 10%, var(--b-sand));
+	display: grid;
+	place-items: center;
+}
+
+.badr-activite__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 700ms var(--b-out);
+}
+
+.badr-activite:hover .badr-activite__media img {
+	transform: scale(1.06);
+}
+
+.badr-activite__mark {
+	display: grid;
+	place-items: center;
+	inline-size: 55%;
+	color: var(--b-accent);
+	opacity: 0.55;
+}
+
+.badr-activite__mark .badr-famille__icon {
+	inline-size: 100%;
+	block-size: auto;
+}
+
+.badr-activite__family {
+	margin: 0 0 0.3rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-activite__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+	font-weight: 700;
+	line-height: 1.18;
+	letter-spacing: -0.022em;
+}
+
+.badr-activite__title a {
+	color: var(--b-ink);
+	text-decoration: none;
+}
+
+/* La carte entière est cliquable, sans piéger le clavier : seul le titre est
+   un lien, mais sa zone active couvre la carte. */
+.badr-activite__title a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+.badr-activite {
+	position: relative;
+}
+
+.badr-activite__title a:hover {
+	color: var(--b-accent-d);
+}
+
+.badr-activite__summary {
+	margin: 0.5rem 0 0;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--b-muted);
+	max-inline-size: 56ch;
+}
+
+.badr-activite__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem 1.25rem;
+	margin: 0.875rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.9375rem;
+	color: var(--b-text);
+}
+
+.badr-activite__meta li {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.badr-activite__meta svg {
+	flex: none;
+	color: var(--b-accent-d);
+	opacity: 0.85;
+}
+
+/* Champ non confirmé : dit clairement qu'il reste à remplir, plutôt que
+   d'afficher une valeur plausible. */
+.is-todo {
+	font-style: italic;
+	color: var(--b-muted);
+	opacity: 0.85;
+}
+
+.badr-activite__aside {
+	display: grid;
+	gap: 0.625rem;
+	justify-items: start;
+	align-content: center;
+}
+
+@media (min-width: 48rem) {
+	.badr-activite__aside {
+		justify-items: end;
+		text-align: right;
+	}
+}
+
+.badr-activite__aside .badr-link,
+.badr-activite__aside .badr-btn {
+	position: relative;
+	z-index: 1;
+}
+
+/* --- Étiquettes d'état ---------------------------------------------------- */
+
+.badr-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.35rem 0.75rem;
+	border-radius: var(--b-r-pill);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.badr-tag::before {
+	content: "";
+	inline-size: 6px;
+	block-size: 6px;
+	border-radius: 50%;
+	background: currentColor;
+}
+
+.badr-tag--ouverte {
+	background: rgba(44, 107, 30, 0.12);
+	color: var(--b-leaf-d);
+}
+
+.badr-tag--bientot {
+	background: rgba(138, 74, 2, 0.12);
+	color: var(--b-amber-d);
+}
+
+.badr-tag--fermee {
+	background: rgba(16, 48, 58, 0.09);
+	color: var(--b-muted);
+}
+
+.badr-tag--aucune {
+	background: rgba(1, 57, 84, 0.11);
+	color: var(--b-azure-d);
+}
+
+.badr-tag--info {
+	background: rgba(16, 48, 58, 0.08);
+	color: var(--b-ink-3);
+}
+
+.badr-tag--espace {
+	background: color-mix(in srgb, var(--b-accent) 14%, transparent);
+	color: var(--b-accent-d);
+	transition: background-color var(--b-base) var(--b-ease);
+}
+
+.badr-tag--espace::before {
+	background: var(--b-accent);
+}
+
+.badr-tag--espace:hover {
+	background: color-mix(in srgb, var(--b-accent) 26%, transparent);
+}
+
+.badr-btn--sm {
+	min-height: 40px;
+	padding: 0.5rem 1.125rem;
+	font-size: 0.9375rem;
+}
+
+/* ==========================================================================
+   25. PAGE D'UN PROGRAMME
+   ========================================================================== */
+
+.badr-breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.04em;
+	color: var(--b-muted);
+}
+
+.badr-breadcrumb a {
+	color: var(--b-muted);
+	text-decoration: none;
+	transition: color var(--b-base) var(--b-ease);
+}
+
+.badr-breadcrumb a:hover {
+	color: var(--b-accent-d);
+}
+
+.badr-breadcrumb span[aria-hidden] {
+	opacity: 0.45;
+}
+
+.badr-breadcrumb [aria-current] {
+	color: var(--b-ink);
+	font-weight: 600;
+}
+
+.badr-programme__hero {
+	position: relative;
+	overflow: hidden;
+	padding-block: clamp(6.5rem, 15vh, 9.5rem) clamp(2.5rem, 5vw, 4rem);
+	margin-top: calc(-1 * (clamp(58px, 6vw, 76px) + 1.75rem));
+	background: var(--b-ivory);
+	isolation: isolate;
+}
+
+.badr-programme__hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(56% 62% at 92% 0%, color-mix(in srgb, var(--b-accent) 15%, transparent), transparent 68%),
+		linear-gradient(180deg, var(--b-ivory), var(--b-ivory-2));
+	pointer-events: none;
+}
+
+.badr-programme__hero-grid {
+	display: grid;
+	gap: clamp(1.75rem, 4vw, 3rem);
+	align-items: center;
+}
+
+@media (min-width: 54rem) {
+	.badr-programme__hero-grid {
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+	}
+}
+
+.badr-programme__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2.25rem, 1.3rem + 3.6vw, 4rem);
+	font-weight: 700;
+	line-height: 1.03;
+	letter-spacing: -0.032em;
+	color: var(--b-ink);
+	max-inline-size: 16ch;
+	text-wrap: balance;
+}
+
+.badr-programme__summary {
+	margin: clamp(1rem, 2vw, 1.5rem) 0 0;
+	font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+	line-height: 1.62;
+	color: var(--b-muted);
+	max-inline-size: 48ch;
+}
+
+.badr-programme__badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1.25rem;
+}
+
+.badr-programme__media {
+	margin: 0;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	aspect-ratio: 4 / 3;
+	background: var(--b-sand);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-programme__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+}
+
+.badr-programme__mark {
+	border-radius: var(--b-r-lg);
+	aspect-ratio: 4 / 3;
+	background:
+		radial-gradient(60% 60% at 30% 25%, color-mix(in srgb, var(--b-accent) 45%, transparent), transparent 70%),
+		radial-gradient(70% 70% at 78% 82%, color-mix(in srgb, var(--b-accent) 24%, transparent), transparent 70%),
+		var(--b-sand);
+}
+
+.badr-programme__body {
+	display: grid;
+	gap: clamp(2rem, 4vw, 3.5rem);
+	align-items: start;
+}
+
+@media (min-width: 58rem) {
+	.badr-programme__body {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+	}
+}
+
+.badr-programme__prose > * + * {
+	margin-top: 1.25rem;
+}
+
+.badr-programme__prose p {
+	margin: 0;
+	font-size: 1.0625rem;
+	line-height: 1.75;
+	color: var(--b-text);
+	max-inline-size: 60ch;
+}
+
+.badr-programme__prose :is(h2, h3) {
+	margin-top: 2.25rem;
+	font-family: var(--wp--preset--font-family--accent);
+	letter-spacing: -0.022em;
+	color: var(--b-ink);
+}
+
+@media (min-width: 58rem) {
+	.badr-programme__aside {
+		position: sticky;
+		top: clamp(6rem, 14vh, 8rem);
+	}
+}
+
+.badr-infobox {
+	padding: clamp(1.25rem, 2.5vw, 1.75rem);
+	background: var(--b-sand);
+	border-radius: var(--b-r-md);
+	border-top: 4px solid var(--b-accent);
+	display: grid;
+	gap: 1rem;
+}
+
+.badr-infobox__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.125rem;
+	font-weight: 700;
+	letter-spacing: -0.018em;
+	color: var(--b-ink);
+}
+
+.badr-infobox__list {
+	display: grid;
+	gap: 0;
+	margin: 0;
+}
+
+.badr-infobox__list > div {
+	display: grid;
+	gap: 0.25rem;
+	padding: 0.75rem 0;
+	border-top: 1px solid var(--b-line);
+}
+
+.badr-infobox__list dt {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-infobox__list dd {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.5;
+	color: var(--b-ink);
+}
+
+.badr-infobox__cta {
+	justify-content: center;
+	width: 100%;
+}
+
+/* ==========================================================================
+   26. PAGE D'UN ESPACE COMMUNAUTAIRE
+   ========================================================================== */
+
+.badr-espace-hub__hero {
+	position: relative;
+	overflow: hidden;
+	padding-block: clamp(6.5rem, 15vh, 9.5rem) clamp(2.5rem, 5vw, 4rem);
+	margin-top: calc(-1 * (clamp(58px, 6vw, 76px) + 1.75rem));
+	background: var(--b-ivory);
+	isolation: isolate;
+}
+
+.badr-espace-hub__hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(58% 64% at 90% 0%, color-mix(in srgb, var(--b-accent) 18%, transparent), transparent 68%),
+		radial-gradient(44% 50% at 2% 96%, color-mix(in srgb, var(--b-accent) 10%, transparent), transparent 66%),
+		linear-gradient(180deg, var(--b-ivory), var(--b-ivory-2));
+	pointer-events: none;
+}
+
+.badr-espace-hub__grid {
+	display: grid;
+	gap: clamp(1.75rem, 4vw, 3rem);
+	align-items: center;
+}
+
+@media (min-width: 54rem) {
+	.badr-espace-hub__grid {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+}
+
+.badr-espace-hub__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2.25rem, 1.3rem + 3.6vw, 4rem);
+	font-weight: 700;
+	line-height: 1.03;
+	letter-spacing: -0.032em;
+	color: var(--b-ink);
+	text-wrap: balance;
+}
+
+.badr-espace-hub__lead {
+	margin: clamp(1rem, 2vw, 1.5rem) 0 0;
+	font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+	line-height: 1.62;
+	color: var(--b-muted);
+	max-inline-size: 48ch;
+}
+
+.badr-espace-hub__media {
+	margin: 0;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	aspect-ratio: 5 / 4;
+	background: var(--b-sand);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-espace-hub__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+}
+
+.badr-themes {
+	display: grid;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--b-line);
+}
+
+@media (min-width: 52rem) {
+	.badr-themes {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.badr-themes li {
+	display: grid;
+	gap: 0.35rem;
+	padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1rem, 2vw, 1.75rem) clamp(1.25rem, 2.5vw, 2rem) 0;
+	border-bottom: 1px solid var(--b-line);
+}
+
+@media (min-width: 52rem) {
+	.badr-themes li + li {
+		padding-left: clamp(1rem, 2vw, 1.75rem);
+		border-left: 1px solid var(--b-line);
+	}
+}
+
+.badr-themes__num {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.12em;
+	color: var(--b-accent-d);
+}
+
+.badr-themes strong {
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.1875rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	color: var(--b-ink);
+}
+
+.badr-themes span:last-child {
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--b-muted);
+}
+
+.badr-espaces-liens {
+	display: grid;
+	gap: 0.75rem;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.badr-espace-lien {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem 1.25rem;
+	background: var(--b-ivory);
+	border: 1px solid var(--b-line-soft);
+	border-left: 4px solid var(--b-accent);
+	border-radius: var(--b-r-sm);
+	text-decoration: none;
+	color: var(--b-ink);
+	transition: transform var(--b-base) var(--b-out), box-shadow var(--b-base) var(--b-ease);
+}
+
+.badr-espace-lien:hover {
+	transform: translateX(4px);
+	box-shadow: var(--b-shadow-1);
+}
+
+.badr-espace-lien__name {
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: 1.0625rem;
+	font-weight: 600;
+	letter-spacing: -0.018em;
+}
+
+.badr-espace-lien svg {
+	flex: none;
+	color: var(--b-accent);
+	transition: transform var(--b-base) var(--b-out);
+}
+
+.badr-espace-lien:hover svg {
+	transform: translateX(4px);
+}
+
+/* ==========================================================================
+   27. PARCOURS DES ESPACES — six chapitres
+   ========================================================================== */
+
+.badr-parcours-espaces {
+	position: relative;
+	background: var(--b-ivory);
+}
+
+.badr-espace-chapitre {
+	position: relative;
+	padding-block: clamp(3rem, 7vw, 6rem);
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.badr-espace-chapitre:nth-child(even) {
+	background: color-mix(in srgb, var(--b-accent) 5%, var(--b-ivory));
+}
+
+.badr-espace-chapitre::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	background: radial-gradient(46% 56% at 88% 12%, color-mix(in srgb, var(--b-accent) 12%, transparent), transparent 68%);
+	pointer-events: none;
+}
+
+/* Numéro en filigrane : grand, discret, jamais lisible par-dessus le texte. */
+.badr-espace-chapitre__folio {
+	position: absolute;
+	top: clamp(1rem, 3vw, 2.5rem);
+	right: clamp(0.5rem, 3vw, 3rem);
+	z-index: -1;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(7rem, 18vw, 16rem);
+	font-weight: 800;
+	line-height: 0.8;
+	letter-spacing: -0.06em;
+	color: color-mix(in srgb, var(--b-accent) 13%, transparent);
+	pointer-events: none;
+	user-select: none;
+}
+
+.badr-espace-chapitre--flip .badr-espace-chapitre__folio {
+	right: auto;
+	left: clamp(0.5rem, 3vw, 3rem);
+}
+
+/* Le fil courbe qui relie un espace au suivant. */
+.badr-espace-chapitre__fil {
+	position: absolute;
+	inset-block: 0;
+	left: max(0.5rem, calc((100vw - var(--b-wide)) / 2 - 2.5rem));
+	inline-size: 72px;
+	z-index: -1;
+	pointer-events: none;
+}
+
+.badr-espace-chapitre__fil svg {
+	inline-size: 100%;
+	block-size: 100%;
+	overflow: visible;
+}
+
+.badr-espace-chapitre__fil path {
+	fill: none;
+	stroke: var(--b-accent);
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	opacity: 0.4;
+}
+
+@media (max-width: 74rem) {
+	.badr-espace-chapitre__fil {
+		display: none;
+	}
+}
+
+.badr-espace-chapitre__grid {
+	display: grid;
+	gap: clamp(1.5rem, 3.5vw, 3.5rem);
+	align-items: center;
+}
+
+@media (min-width: 60rem) {
+	.badr-espace-chapitre__grid {
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+	}
+
+	.badr-espace-chapitre--flip .badr-espace-chapitre__media {
+		order: 2;
+	}
+}
+
+.badr-espace-chapitre__media {
+	position: relative;
+	margin: 0;
+	overflow: hidden;
+	border-radius: var(--b-r-lg);
+	aspect-ratio: 5 / 4;
+	background: var(--b-sand);
+	box-shadow: var(--b-shadow-2);
+}
+
+.badr-espace-chapitre__media img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	transition: transform 1200ms var(--b-out);
+}
+
+.badr-espace-chapitre:hover .badr-espace-chapitre__media img {
+	transform: scale(1.04);
+}
+
+.badr-espace-chapitre__badge {
+	position: absolute;
+	left: 1rem;
+	top: 1rem;
+	padding: 0.45rem 0.9rem;
+	border-radius: var(--b-r-pill);
+	background: var(--b-accent);
+	color: #fff;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+}
+
+.badr-espace-chapitre__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+	font-weight: 700;
+	line-height: 1.04;
+	letter-spacing: -0.032em;
+	color: var(--b-ink);
+}
+
+.badr-espace-chapitre__intro {
+	margin: clamp(0.875rem, 2vw, 1.25rem) 0 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+	line-height: 1.34;
+	letter-spacing: -0.015em;
+	color: var(--b-accent-d);
+	max-inline-size: 40ch;
+}
+
+.badr-espace-chapitre__text {
+	margin: clamp(0.875rem, 2vw, 1.25rem) 0 0;
+	font-size: 1.0625rem;
+	line-height: 1.75;
+	color: var(--b-muted);
+	max-inline-size: 62ch;
+}
+
+.badr-espace-chapitre__themes {
+	display: grid;
+	gap: 0;
+	margin: clamp(1.5rem, 3vw, 2rem) 0 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--b-line);
+}
+
+.badr-espace-chapitre__themes li {
+	display: grid;
+	gap: 0.2rem;
+	padding: 0.875rem 0;
+	border-bottom: 1px solid var(--b-line);
+}
+
+@media (min-width: 40rem) {
+	.badr-espace-chapitre__themes li {
+		grid-template-columns: minmax(8rem, auto) minmax(0, 1fr);
+		gap: 1.25rem;
+		align-items: baseline;
+	}
+}
+
+.badr-espace-chapitre__themes strong {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--b-accent-d);
+}
+
+.badr-espace-chapitre__themes span {
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--b-text);
+}
+
+.badr-espace-chapitre__services {
+	margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.badr-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0.75rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.badr-chips a {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.45rem 0.9rem;
+	border-radius: var(--b-r-pill);
+	background: color-mix(in srgb, var(--b-accent) 12%, transparent);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: var(--b-ink);
+	text-decoration: none;
+	transition: background-color var(--b-base) var(--b-ease), transform var(--b-fast) var(--b-ease);
+}
+
+.badr-chips a:hover {
+	background: color-mix(in srgb, var(--b-accent) 24%, transparent);
+	transform: translateY(-2px);
+}
+
+/* Respiration colorée au milieu du parcours. */
+.badr-espace-intermede {
+	position: relative;
+	padding-block: clamp(3.5rem, 8vw, 6.5rem);
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+	overflow: hidden;
+	text-align: center;
+}
+
+.badr-espace-intermede::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(40% 60% at 50% 0%, rgba(250, 134, 3, 0.24), transparent 66%),
+		radial-gradient(48% 60% at 14% 100%, rgba(66, 156, 44, 0.2), transparent 66%);
+	pointer-events: none;
+}
+
+.badr-espace-intermede > * {
+	position: relative;
+}
+
+.badr-espace-intermede .badr-statement {
+	margin-inline: auto;
+	color: var(--b-on-dark);
+	max-inline-size: 20ch;
+}
+
+.badr-espace-intermede .badr-em {
+	color: var(--b-gold);
+}
+
+.badr-espace-intermede .badr-lead {
+	margin-inline: auto;
+	margin-top: 1.25rem;
+	color: #d9cfc2;
+	max-inline-size: 52ch;
+}
+
+/* ==========================================================================
+   28. NOS VALEURS EN ACTION — expérience pilotée par le défilement
+   ========================================================================== */
+
+.badr-valeurs {
+	position: relative;
+	background: var(--b-ink);
+	color: var(--b-on-dark);
+}
+
+/* Sans JavaScript : quatre valeurs empilées, toutes lisibles. */
+.badr-valeurs__track {
+	padding-block: clamp(3.5rem, 8vw, 6rem);
+}
+
+.badr-valeurs__inner {
+	position: relative;
+	z-index: 1;
+}
+
+.badr-valeurs__bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background:
+		radial-gradient(46% 58% at 16% 12%, color-mix(in srgb, var(--b-accent) 40%, transparent), transparent 68%),
+		radial-gradient(44% 54% at 88% 88%, color-mix(in srgb, var(--b-accent) 26%, transparent), transparent 70%);
+	transition: background 900ms var(--b-ease);
+	pointer-events: none;
+}
+
+.badr-valeurs__list {
+	display: grid;
+	gap: clamp(2.5rem, 6vw, 4.5rem);
+	margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.badr-valeur {
+	display: grid;
+	gap: clamp(1.25rem, 3vw, 2.5rem);
+	align-items: center;
+}
+
+@media (min-width: 54rem) {
+	.badr-valeur {
+		grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+	}
+}
+
+.badr-valeur__num {
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	letter-spacing: 0.16em;
+	color: var(--b-gold);
+}
+
+.badr-valeur__mark {
+	inline-size: clamp(7rem, 14vw, 12rem);
+	block-size: auto;
+	color: var(--b-accent);
+	filter: drop-shadow(0 0 32px color-mix(in srgb, var(--b-accent) 45%, transparent));
+}
+
+.badr-valeur__mark :is(path, circle, ellipse) {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.6;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.badr-valeur__mark [fill="currentColor"] {
+	fill: currentColor;
+	stroke: none;
+}
+
+.badr-valeur__name {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--accent);
+	font-size: clamp(2.5rem, 1.4rem + 4.4vw, 5.5rem);
+	font-weight: 800;
+	line-height: 0.98;
+	letter-spacing: -0.04em;
+	color: #fffaf3;
+}
+
+.badr-valeur__short {
+	margin: clamp(1rem, 2vw, 1.5rem) 0 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: clamp(1.375rem, 1rem + 1.4vw, 2.125rem);
+	line-height: 1.3;
+	letter-spacing: -0.016em;
+	color: var(--b-gold);
+	max-inline-size: 34ch;
+}
+
+.badr-valeur__long {
+	margin: clamp(0.875rem, 1.8vw, 1.25rem) 0 0;
+	font-size: 1.0625rem;
+	line-height: 1.72;
+	color: #d9cfc2;
+	max-inline-size: 56ch;
+}
+
+.badr-valeurs__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem 1.5rem;
+	margin-top: clamp(2rem, 4vw, 3rem);
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--b-line-dark);
+}
+
+.badr-valeurs__next {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.75rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #d9cfc2;
+}
+
+.badr-valeurs__next span {
+	color: var(--b-gold);
+}
+
+.badr-valeurs__dots {
+	display: flex;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	margin-inline-start: auto;
+}
+
+.badr-valeurs__dots li {
+	inline-size: 2.25rem;
+	block-size: 3px;
+	border-radius: 3px;
+	background: var(--b-line-dark);
+	transition: background-color 500ms var(--b-ease);
+}
+
+.badr-valeurs__dots li.is-active {
+	background: var(--b-accent);
+}
+
+.badr-valeurs__count {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--data);
+	font-size: 0.8125rem;
+	letter-spacing: 0.08em;
+	color: #d9cfc2;
+	font-variant-numeric: tabular-nums;
+}
+
+/* --- Mode piloté par le défilement, posé par le script -------------------- */
+
+.badr-valeurs.is-scrollable .badr-valeurs__track {
+	padding-block: 0;
+	block-size: 420vh;
+}
+
+.badr-valeurs.is-scrollable .badr-valeurs__stage {
+	position: sticky;
+	top: 0;
+	block-size: 100svh;
+	display: grid;
+	align-content: center;
+	overflow: hidden;
+	padding-block: clamp(3rem, 8vh, 5rem);
+}
+
+.badr-valeurs.is-scrollable .badr-valeurs__list {
+	display: grid;
+	grid-template-areas: "stack";
+	gap: 0;
+	margin-top: clamp(1rem, 2.5vw, 2rem);
+}
+
+.badr-valeurs.is-scrollable .badr-valeur {
+	grid-area: stack;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(28px);
+	transition:
+		opacity 620ms var(--b-out),
+		transform 720ms var(--b-out),
+		visibility 0s linear 720ms;
+}
+
+.badr-valeurs.is-scrollable .badr-valeur.is-active {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition:
+		opacity 620ms var(--b-out) 100ms,
+		transform 720ms var(--b-out) 100ms,
+		visibility 0s;
+}
+
+/* Le symbole se trace à chaque changement de valeur. */
+.badr-valeurs.is-scrollable .badr-valeur.is-active .badr-valeur__mark :is(path, circle, ellipse):not([fill="currentColor"]) {
+	stroke-dasharray: 420;
+	animation: badr-mark-draw 1500ms var(--b-out) forwards;
+}
+
+@keyframes badr-mark-draw {
+	from {
+		stroke-dashoffset: 420;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.badr-valeurs.is-scrollable .badr-valeurs__track {
+		block-size: auto;
+		padding-block: clamp(3.5rem, 8vw, 6rem);
+	}
+
+	.badr-valeurs.is-scrollable .badr-valeurs__stage {
+		position: static;
+		block-size: auto;
+	}
+
+	.badr-valeurs.is-scrollable .badr-valeurs__list {
+		grid-template-areas: none;
+		gap: clamp(2.5rem, 6vw, 4.5rem);
+	}
+
+	.badr-valeurs.is-scrollable .badr-valeur {
+		grid-area: auto;
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+	}
+}
+
+/* ==========================================================================
+   29. IMPRESSION
+   ========================================================================== */
+
+@media print {
+	.badr-header,
+	.badr-footer,
+	.badr-hero-anime__skip,
+	.badr-hero-anime__cue,
+	.badr-flore,
+	.badr-fil,
+	body::after {
+		display: none !important;
+	}
+
+	.badr-section,
+	.badr-section--ink,
+	.badr-band-dark,
+	.badr-quotes,
+	.badr-closing,
+	.badr-impact {
+		background: #fff !important;
+		color: #000 !important;
+		padding-block: 1.5rem !important;
+	}
+
+	.badr-quote {
+		opacity: 1 !important;
+		visibility: visible !important;
+		position: static !important;
+	}
+}

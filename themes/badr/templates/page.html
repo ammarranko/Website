@@ -1,0 +1,20 @@
+<!-- wp:template-part {"slug":"header"} /-->
+
+<!-- wp:group {"tagName":"main","anchor":"badr-main","layout":{"type":"constrained"}} -->
+<main id="badr-main" class="wp-block-group">
+
+	<!-- Pas de bloc post-title ici : chaque page du BADR porte son propre titre
+	     de niveau 1 dans la composition « Tête de page », ce qui permet un titre
+	     éditorial distinct du titre d'administration. Deux titres de niveau 1
+	     casseraient la hiérarchie. Pour une nouvelle page, insérer d'abord la
+	     composition « BADR — Tête de page ». -->
+
+	<!-- Le contenu est en pleine largeur et gère lui-même sa mise en page
+	     contrainte : sans cela, il serait plafonné à la largeur de contenu et
+	     aucun bloc « alignwide » ne pourrait s'élargir. -->
+	<!-- wp:post-content {"align":"full","layout":{"type":"constrained"}} /-->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer"} /-->

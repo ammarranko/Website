@@ -1,0 +1,50 @@
+<!-- La page la plus importante du site. Toute la structure (héros utile,
+     chercheur d'activités, quatre familles en navigation principale, liste des
+     activités) vient de la composition « Répertoire des services et
+     activités », qui lit le type d'objet « Programmes » modifiable dans
+     wp-admin. Rien n'est codé en dur dans ce fichier de contenu. -->
+
+<!-- wp:pattern {"slug":"badr/repertoire-services"} /-->
+
+<!-- L'UREC n'est pas une activité ouverte au public : c'est une unité de
+     recherche. Elle reste hors du répertoire, présentée à part. -->
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"layout":{"type":"default"}} -->
+<div class="wp-block-group alignfull" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+	<!-- wp:html -->
+	<section class="badr-section badr-section--ink" style="--b-accent:var(--b-azure)" aria-labelledby="badr-urec-titre">
+		<div class="badr-shell">
+			<div class="badr-duo">
+
+				<div class="badr-duo__text" data-reveal="mask">
+					<p class="badr-eyebrow">UREC — B.A.D.R</p>
+					<h2 class="badr-section__title" id="badr-urec-titre">L’Unité de Recherche et d’Évaluation <span class="badr-em">Communautaire</span></h2>
+					<p>L’unité de recherche et d’évaluation communautaire (UREC – B.A.D.R) a pour mission de documenter, analyser et mieux comprendre les enjeux qui touchent les communautés desservies par BADR. Elle appuie les projets par la production de données rigoureuses, encourage l’innovation sociale et enrichit les pratiques à travers une démarche continue d’évaluation participative.</p>
+					<p>L’UREC soutient également les OBNL du milieu dans leurs démarches d’évaluation et joue un rôle de passerelle entre les savoirs citoyens, professionnels et scientifiques.</p>
+				</div>
+
+				<div data-reveal="up">
+					<p class="badr-activities__label" style="color:var(--b-gold)">Services offerts par l’UREC</p>
+					<ul class="badr-activities">
+						<li>Recherche sociale</li>
+						<li>Évaluation de programmes</li>
+						<li>Recherche évaluative</li>
+						<li>Enquêtes et sondages communautaires</li>
+						<li>ETMI en santé communautaire</li>
+						<li>Synthèse de connaissances</li>
+						<li>Renforcement des compétences</li>
+					</ul>
+					<div class="badr-actions">
+						<a class="badr-btn badr-btn--ghost" href="/implication/"><span>Contacter l’UREC</span></a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<!-- /wp:html -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:pattern {"slug":"badr/slogan"} /-->
+
+<!-- wp:pattern {"slug":"badr/cloture"} /-->

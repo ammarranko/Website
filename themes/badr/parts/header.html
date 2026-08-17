@@ -1,0 +1,30 @@
+<!-- wp:html -->
+<a class="badr-skip-link" href="#badr-main">Aller au contenu principal</a>
+<!-- /wp:html -->
+
+<!-- En-tête sur une seule ligne, un seul système d'alignement : logo à gauche,
+     navigation à cinq entrées au centre-droite, appel à l'action plein à droite.
+     Transparent au-dessus de l'ouverture, il devient une surface floutée dès le
+     premier défilement (classe « is-collee » posée par assets/js/reveal.js).
+     Les pages secondaires vivent dans des sous-menus, gérés par le personnel
+     dans l'éditeur de site. -->
+<!-- wp:group {"tagName":"header","className":"badr-header","layout":{"type":"default"}} -->
+<header class="wp-block-group badr-header">
+	<!-- wp:group {"className":"badr-header__inner","layout":{"type":"constrained","contentSize":"76rem"}} -->
+	<div class="wp-block-group badr-header__inner">
+
+		<!-- wp:site-logo {"width":76,"shouldSyncIcon":true,"className":"badr-logo"} /-->
+
+		<!-- wp:navigation {"overlayMenu":"mobile","icon":"menu","hasIcon":true,"overlayBackgroundColor":"paper","overlayTextColor":"navy-700","ariaLabel":"Navigation principale","layout":{"type":"flex","justifyContent":"right","flexWrap":"wrap"}} /-->
+
+		<!-- wp:html -->
+		<a class="badr-header__cta" href="/implication/">
+			<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+			<span>Nous joindre</span>
+		</a>
+		<!-- /wp:html -->
+
+	</div>
+	<!-- /wp:group -->
+</header>
+<!-- /wp:group -->
